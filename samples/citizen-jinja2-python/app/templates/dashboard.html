@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <h1 class="h4 mb-1">Product / Trading Dashboard</h1>
+  <div class="text-secondary">點擊 Product Bar，下面的月別 Chart 與 Detail Grid 會同步 Drill-down。</div>
+</div>
+
+<div id="dashboard-message" class="alert d-none" role="alert"></div>
+
+<section class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="metric-card h-100">
+      <div class="metric-label">Product Count</div>
+      <div id="product-count" class="metric-value">-</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="metric-card h-100">
+      <div class="metric-label">Trading Count</div>
+      <div id="trading-count" class="metric-value">-</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="metric-card h-100">
+      <div class="metric-label">Total Trading Amount</div>
+      <div id="total-amount" class="metric-value">-</div>
+      <div id="currency-code" class="text-secondary small"></div>
+    </div>
+  </div>
+</section>
+
+<section class="card shadow-sm mb-4">
+  <div class="card-header fw-semibold">Trading Amount by Product</div>
+  <div class="card-body">
+    <div id="product-chart" class="chart"></div>
+  </div>
+</section>
+
+<section class="row g-4">
+  <div class="col-xl-7">
+    <div class="card shadow-sm h-100">
+      <div class="card-header fw-semibold">Monthly Drill-down <span id="selected-product-label" class="text-secondary"></span></div>
+      <div class="card-body">
+        <div id="monthly-chart" class="chart"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-5">
+    <div class="card shadow-sm h-100">
+      <div class="card-header fw-semibold">Trading Detail</div>
+      <div class="card-body table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Counterparty</th>
+              <th class="text-end">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="drilldown-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='js/dashboard.js') }}"></script>
+{% endblock %}

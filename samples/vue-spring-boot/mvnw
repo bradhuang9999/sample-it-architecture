@@ -1,0 +1,52 @@
+#!/bin/sh
+set -eu
+
+# WUT1 教學模板使用的精簡 Maven Wrapper。
+# 若系統已安裝 Maven，直接使用；否則下載 repo 內固定版本到 ~/.m2/wrapper/dists。
+if command -v mvn >/dev/null 2>&1; then
+  exec mvn "$@"
+fi
+
+ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PROPS="$ROOT_DIR/.mvn/wrapper/maven-wrapper.properties"
+DIST_URL=$(sed -n 's/^distributionUrl=//p' "$PROPS")
+EXPECTED_SHA512=$(sed -n 's/^distributionSha512Sum=//p' "$PROPS")
+ARCHIVE_NAME=${DIST_URL##*/}
+DIST_NAME=${ARCHIVE_NAME%-bin.zip}
+MAVEN_HOME="${MAVEN_USER_HOME:-$HOME/.m2}/wrapper/dists/$DIST_NAME/wut1"
+
+if [ ! -x "$MAVEN_HOME/bin/mvn" ]; then
+  TMP_DIR=$(mktemp -d)
+  trap 'rm -rf "$TMP_DIR"' EXIT HUP INT TERM
+  ARCHIVE="$TMP_DIR/$ARCHIVE_NAME"
+
+  echo "Maven not found. Downloading $DIST_URL" >&2
+  if command -v curl >/dev/null 2>&1; then
+    curl -fL "$DIST_URL" -o "$ARCHIVE"
+  elif command -v wget >/dev/null 2>&1; then
+    wget "$DIST_URL" -O "$ARCHIVE"
+  else
+    echo "curl or wget is required to bootstrap Maven." >&2
+    exit 1
+  fi
+
+  if command -v sha512sum >/dev/null 2>&1; then
+    ACTUAL_SHA512=$(sha512sum "$ARCHIVE" | awk '{print $1}')
+    [ "$ACTUAL_SHA512" = "$EXPECTED_SHA512" ] || {
+      echo "Maven distribution SHA-512 verification failed." >&2
+      exit 1
+    }
+  fi
+
+  command -v unzip >/dev/null 2>&1 || {
+    echo "unzip is required to bootstrap Maven." >&2
+    exit 1
+  }
+
+  unzip -q "$ARCHIVE" -d "$TMP_DIR"
+  mkdir -p "$(dirname "$MAVEN_HOME")"
+  rm -rf "$MAVEN_HOME"
+  mv "$TMP_DIR/$DIST_NAME" "$MAVEN_HOME"
+fi
+
+exec "$MAVEN_HOME/bin/mvn" "$@"

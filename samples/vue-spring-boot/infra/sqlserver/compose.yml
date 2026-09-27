@@ -1,0 +1,14 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: wut1-sample-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    ports:
+      - "14333:1433"
+    volumes:
+      - wut1-sqlserver-data:/var/opt/mssql
+
+volumes:
+  wut1-sqlserver-data:

@@ -1,0 +1,21 @@
+# 僅供本機教學環境；SQLite File 會建立於專案 data/ 目錄。
+
+spring:
+  datasource:
+    url: "jdbc:sqlite:${SQLITE_DB_PATH:./data/wut1-sample.db}?foreign_keys=on&busy_timeout=5000"
+
+  sql:
+    init:
+      # 只有 local profile 允許自動建立 Sample Schema / Sample Data。
+      mode: always
+      schema-locations: classpath:db/CURRENT_SCHEMA.sql
+      data-locations: classpath:db/LOCAL_SAMPLE_DATA.sql
+      continue-on-error: false
+
+logging:
+  level:
+    com.example.wut1sample: DEBUG
+
+app:
+  audit:
+    default-user: ${APP_DEFAULT_USER:LOCAL_DEMO}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>wut1-it-app-template-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>WUT1 IT Application Template</name>
+    <description>公司 IT AI-assisted application golden path template - React</description>
+
+    <modules>
+        <module>backend</module>
+    </modules>
+
+    <properties>
+        <java.version>25</java.version>
+        <spring-modulith.version>2.1.1</spring-modulith.version>
+
+        <!-- Frontend build 固定版本，避免 CI 每次取得不同 toolchain。 -->
+        <node.version>v22.16.0</node.version>
+        <npm.version>10.9.2</npm.version>
+        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
+        <sqlite-jdbc.version>3.53.4.0</sqlite-jdbc.version>
+
+        <!-- Local backend-only 開發可使用 -Dskip.frontend=true。 -->
+        <skip.frontend>false</skip.frontend>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.modulith</groupId>
+                <artifactId>spring-modulith-bom</artifactId>
+                <version>${spring-modulith.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

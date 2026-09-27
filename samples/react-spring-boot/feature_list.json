@@ -1,0 +1,35 @@
+{
+  "project": "WUT1 IT Application Template",
+  "features": [
+    {
+      "id": "master-detail",
+      "name": "Product / Trading Master Detail",
+      "status": "source-complete-pending-runtime-verification",
+      "spec": "docs/product-specs/product-trading-master-detail.md",
+      "verification": [
+        "backend unit tests",
+        "local SQLite integration test",
+        "frontend typecheck",
+        "Playwright"
+      ]
+    },
+    {
+      "id": "dashboard-drilldown",
+      "name": "Product Trading Dashboard Drill-down",
+      "status": "source-complete-pending-runtime-verification",
+      "spec": "docs/product-specs/product-trading-dashboard.md",
+      "verification": [
+        "backend unit tests",
+        "local SQLite integration test",
+        "frontend typecheck",
+        "Playwright"
+      ]
+    }
+  ],
+  "frontend": {
+    "framework": "React 19",
+    "serverState": "TanStack Query",
+    "router": "React Router",
+    "build": "Vite"
+  }
+}

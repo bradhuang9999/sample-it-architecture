@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: wut1-it-app-template
+
+  profiles:
+    # 教學模板預設即可 Local Standalone 執行，不需要先安裝 Database Server。
+    default: local
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+app:
+  audit:
+    # Sample 尚未接公司 Keycloak。正式系統需改由已驗證 Principal 取得。
+    default-user: ${APP_DEFAULT_USER:LOCAL_DEMO}
+
+logging:
+  level:
+    root: INFO
+    com.example.wut1sample: INFO

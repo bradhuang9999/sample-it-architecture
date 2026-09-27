@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-end mb-3">
+  <div>
+    <h1 class="h4 mb-1">Product / Trading Master Detail</h1>
+    <div class="text-secondary">上層 Form、下層 Grid；Business Rule 由 Backend 控制。</div>
+  </div>
+  <div class="product-selector">
+    <label for="product-select" class="form-label small mb-1">Product</label>
+    <select id="product-select" class="form-select"></select>
+  </div>
+</div>
+
+<div id="page-message" class="alert d-none" role="alert"></div>
+
+<section class="card shadow-sm mb-4">
+  <div class="card-header fw-semibold">Master - SAMPLE_PROD</div>
+  <div class="card-body">
+    <form id="product-form" class="row g-3">
+      <input type="hidden" id="prod-id">
+      <input type="hidden" id="prod-row-version">
+
+      <div class="col-md-3">
+        <label class="form-label">PROD_CODE</label>
+        <input id="prod-code" class="form-control" readonly>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">PROD_NAME</label>
+        <input id="prod-name" class="form-control" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">PROD_CATEGORY</label>
+        <input id="prod-category" class="form-control" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">PROD_STATUS</label>
+        <select id="prod-status" class="form-select">
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="INACTIVE">INACTIVE</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">CURRENCY_CODE</label>
+        <input id="currency-code" class="form-control" readonly>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">LIST_PRICE</label>
+        <input id="list-price" class="form-control" type="number" min="0" step="0.01" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">EFFECTIVE_DATE</label>
+        <input id="effective-date" class="form-control" type="date" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">OWNER_DEPT_CODE</label>
+        <input id="owner-dept-code" class="form-control" required>
+      </div>
+      <div class="col-12">
+        <label class="form-label">REMARK</label>
+        <textarea id="prod-remark" class="form-control" rows="2"></textarea>
+      </div>
+      <div class="col-12 d-flex justify-content-end">
+        <button class="btn btn-primary" type="submit">儲存 Master</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span class="fw-semibold">Detail - SAMPLE_TRADING</span>
+    <button id="new-trade-button" class="btn btn-sm btn-outline-primary" type="button">新增 Trading</button>
+  </div>
+  <div class="card-body">
+    <form id="trade-form" class="row g-3 detail-editor d-none mb-4">
+      <input type="hidden" id="trading-id">
+      <input type="hidden" id="trade-row-version">
+
+      <div class="col-md-2">
+        <label class="form-label">TRADE_DATE</label>
+        <input id="trade-date" type="date" class="form-control" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">TRADE_TYPE</label>
+        <select id="trade-type" class="form-select">
+          <option value="BUY">BUY</option>
+          <option value="SELL">SELL</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">COUNTERPARTY</label>
+        <input id="counterparty" class="form-control" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">QUANTITY</label>
+        <input id="quantity" type="number" class="form-control" min="0.0001" step="0.0001" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">UNIT_PRICE</label>
+        <input id="unit-price" type="number" class="form-control" min="0" step="0.0001" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">MARKET_CODE</label>
+        <input id="market-code" class="form-control">
+      </div>
+      <div class="col-md-7">
+        <label class="form-label">REMARK</label>
+        <input id="trade-remark" class="form-control">
+      </div>
+      <div class="col-md-2 d-flex align-items-end gap-2">
+        <button class="btn btn-primary" type="submit">儲存</button>
+        <button id="cancel-trade-button" class="btn btn-outline-secondary" type="button">取消</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-hover align-middle">
+        <thead>
+          <tr>
+            <th>TRADE_DATE</th>
+            <th>TYPE</th>
+            <th>COUNTERPARTY</th>
+            <th class="text-end">QUANTITY</th>
+            <th class="text-end">UNIT_PRICE</th>
+            <th class="text-end">TRADE_AMOUNT</th>
+            <th>MARKET</th>
+            <th class="text-end">ACTION</th>
+          </tr>
+        </thead>
+        <tbody id="trading-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', path='js/master-detail.js') }}"></script>
+{% endblock %}

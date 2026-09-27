@@ -1,0 +1,29 @@
+# Build dependencies and artifacts
+**/node_modules/
+**/target/
+**/dist/
+**/playwright-report/
+**/test-results/
+
+# Python caches and virtual environments
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.venv/
+*.py[cod]
+
+# Local runtime and verification output
+**/data/verification/
+*.log
+*.err
+*.out
+*.db
+*.db-shm
+*.db-wal
+
+# Local tooling
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

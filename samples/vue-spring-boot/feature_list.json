@@ -1,0 +1,27 @@
+{
+  "project": "WUT1 IT Application Template",
+  "features": [
+    {
+      "id": "master-detail",
+      "name": "Product / Trading Master Detail",
+      "status": "source-complete-pending-runtime-verification",
+      "spec": "docs/product-specs/product-trading-master-detail.md",
+      "verification": [
+        "backend unit tests",
+        "frontend typecheck",
+        "Playwright"
+      ]
+    },
+    {
+      "id": "dashboard-drilldown",
+      "name": "Product Trading Dashboard Drill-down",
+      "status": "source-complete-pending-runtime-verification",
+      "spec": "docs/product-specs/product-trading-dashboard.md",
+      "verification": [
+        "backend unit tests",
+        "frontend typecheck",
+        "Playwright"
+      ]
+    }
+  ]
+}

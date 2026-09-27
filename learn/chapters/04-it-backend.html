@@ -1,0 +1,942 @@
+<!doctype html><html lang="zh-Hant" data-academy-font-size="sm"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="WUT1 三種應用架構教學"><title>IT 共用 Backend：Java 與 Spring Boot｜WUT1 Architecture Academy</title><link rel="stylesheet" href="../assets/bootstrap.min.css"><link rel="stylesheet" href="../assets/academy.css"><link rel="stylesheet" href="../assets/site.css"></head><body><div class="academy-app-shell docs-shell"><aside class="academy-sidebar docs-sidebar" aria-label="課程導覽"><div class="docs-brand"><a class="docs-brand-mark" href="../index.html"><span class="docs-brand-logo">W</span><span><span class="docs-brand-title d-block">WUT1 Architecture Academy</span><span class="docs-brand-subtitle d-block">Business First · AI Write · Human Review</span></span></a></div><nav class="academy-sidebar-nav academy-scroll-thin"><div class="academy-nav-label">課程導覽</div><details class="doc-nav-group"><summary>開始這套教學</summary><ul class="doc-nav-list"><li><a data-nav-link href="../chapters/00-overview.html" class="">導讀：這份教學要解決什麼問題</a></li><li><a data-nav-link href="../chapters/01-teaching-site-design.html" class="">教學網站設計</a></li><li><a data-nav-link href="../chapters/02-three-architectures.html" class="">三種架構總覽</a></li><li><a data-nav-link href="../chapters/12-learning-paths.html" class="">建議學習路徑</a></li></ul></details><details class="doc-nav-group"><summary>共同基礎</summary><ul class="doc-nav-list"><li><a data-nav-link href="../chapters/03-shared-web-foundations.html" class="">共同 Web 基礎</a></li><li><a data-nav-link href="../chapters/08-scripts-and-build.html" class="">Scripts 與 Build Tooling</a></li><li><a data-nav-link href="../chapters/09-configuration.html" class="">設定檔語法</a></li><li><a data-nav-link href="../chapters/15-human-review.html" class="">Human Review Checklist</a></li><li><a data-nav-link href="../chapters/16-readiness-check.html" class="">驗證與閱讀檢查</a></li></ul></details><details class="doc-nav-group" open><summary>IT Backend</summary><ul class="doc-nav-list"><li><a data-nav-link href="../chapters/04-it-backend.html" class="active">IT 共用 Backend：Java 與 Spring Boot</a></li></ul></details><details class="doc-nav-group"><summary>Vue 路線</summary><ul class="doc-nav-list"><li><a data-nav-link href="../chapters/05-vue-path.html" class="">IT Vue 路線</a></li></ul></details><details class="doc-nav-group"><summary>React 路線</summary><ul class="doc-nav-list"><li><a data-nav-link href="../chapters/06-react-path.html" class="">IT React 路線</a></li></ul></details><details class="doc-nav-group"><summary>Citizen 與架構比較</summary><ul class="doc-nav-list"><li><a data-nav-link href="../chapters/07-citizen-python-path.html" class="">Citizen Python 路線</a></li><li><a data-nav-link href="../chapters/10-feature-comparison.html" class="">同一功能的三種寫法比較</a></li><li><a data-nav-link href="../chapters/17-responsibility-boundaries.html" class="">三個專案的技術責任邊界</a></li><li><a data-nav-link href="../chapters/18-learning-outcomes.html" class="">最後應該教會什麼</a></li></ul></details><details class="doc-nav-group"><summary>參考資料</summary><ul class="doc-nav-list"><li><a data-nav-link href="../chapters/11-syntax-index.html" class="">Syntax Index</a></li><li><a data-nav-link href="../chapters/13-site-operations.html" class="">教學網站運作與維護</a></li><li><a data-nav-link href="../chapters/14-guided-labs.html" class="">每個範例的實作 Lab</a></li><li><a data-nav-link href="../chapters/appendix-a-version-baseline.html" class="">版本基線</a></li><li><a data-nav-link href="../chapters/appendix-b-web-typescript-api.html" class="">Web 與 TypeScript API 補充</a></li><li><a data-nav-link href="../chapters/appendix-c-css-reference.html" class="">CSS 語法補充</a></li><li><a data-nav-link href="../chapters/appendix-d-file-mapping.html" class="">專案檔案與教學章節對照</a></li><li><a data-nav-link href="../chapters/appendix-e-out-of-scope.html" class="">目前未使用的技術</a></li></ul></details></nav><div class="docs-sidebar-footer p-3"><div>字級</div><div class="docs-font-size"><button data-font-size="sm">小</button><button data-font-size="md">中</button><button data-font-size="lg">大</button></div></div></aside><main class="academy-main docs-main"><header class="docs-toolbar"><button class="btn btn-outline-secondary btn-sm docs-menu-btn" data-menu-toggle>目錄</button><span class="docs-toolbar-title">IT 共用 Backend：Java 與 Spring Boot</span><div class="docs-search-wrap"><span class="docs-search-icon">⌕</span><input id="docsSearch" class="form-control form-control-sm" placeholder="搜尋所有章節（Ctrl+K）" autocomplete="off"><div id="docsSearchResults" class="docs-search-results"></div></div><div class="docs-toolbar-actions"><a class="btn btn-outline-secondary btn-sm" href="../index.html">課程首頁</a></div></header><div class="docs-overlay"></div><div class="docs-content-wrap"><article class="doc-article"><p class="docs-breadcrumb"><a href="../index.html">課程首頁</a> / IT Backend</p><h1 id="it-共用-backend-java-與-spring-boot">IT 共用 Backend：Java 與 Spring Boot</h1>
+<h2 id="12-先看懂-backend-folder-structure">12. 先看懂 Backend Folder Structure</h2>
+<p>Vue / React 兩個 IT Template 共用同一套 Backend：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">backend/src/main/java/com/example/wut1sample/
+│
+├─ SampleApplication.java
+│
+├─ producttrading/
+│  ├─ api/
+│  │  ├─ ProductTradingController.java
+│  │  ├─ ProductTradingDashboardController.java
+│  │  ├─ ProductTradingApiMapper.java
+│  │  └─ dto/
+│  │
+│  ├─ application/
+│  │  ├─ ProductTradingService.java
+│  │  ├─ ProductTradingDashboardService.java
+│  │  ├─ RowVersionCodec.java
+│  │  ├─ UpdateProductCommand.java
+│  │  └─ UpsertTradingCommand.java
+│  │
+│  ├─ domain/
+│  │  ├─ Product.java
+│  │  ├─ Trading.java
+│  │  ├─ ProductStatus.java
+│  │  ├─ TradeType.java
+│  │  └─ ProductTradingRepository.java
+│  │
+│  └─ infrastructure/
+│     └─ persistence/
+│        └─ JdbcProductTradingRepository.java
+│
+└─ shared/
+   ├─ audit/
+   └─ error/
+</code></pre>
+</div><p>這不是為了「分越多層越專業」，而是建立清楚依賴方向：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">api
+ ↓
+application
+ ↓
+domain
+ ↑
+infrastructure
+</code></pre>
+</div><p>Human Review 第一個問題不是「這段 Java 漂不漂亮」，而是：</p>
+<blockquote>
+<p><strong>這個 Business Logic 放的位置對不對？</strong></p>
+</blockquote>
+<hr>
+<h1 id="13-java-基本語法-專案中實際會看到的全部主要形式">13. Java 基本語法：專案中實際會看到的全部主要形式</h1>
+<h2 id="13-1-package">13.1 <code>package</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">package com.example.wut1sample.producttrading.domain;
+</code></pre>
+</div><p>用途：指定 class 所屬 namespace / package。</p>
+<p>Folder 通常與 package 對應：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">com/example/wut1sample/producttrading/domain/Product.java
+</code></pre>
+</div><hr>
+<h2 id="13-2-import">13.2 <code>import</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+</code></pre>
+</div><p>Static import：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">import static org.assertj.core.api.Assertions.assertThat;
+</code></pre>
+</div><p>使用後可以直接：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">assertThat(result).isNotNull();
+</code></pre>
+</div><p>而不必寫完整 class name。</p>
+<hr>
+<h2 id="13-3-class">13.3 <code>class</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public class ProductTradingService {
+}
+</code></pre>
+</div><p>主要語法：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">[access modifier] class ClassName {
+}
+</code></pre>
+</div><h3 id="access-modifier">Access modifier</h3>
+<ul>
+<li><code>public</code>：其他 package 可見。</li>
+<li><code>private</code>：只有同一 class 可見。</li>
+<li>package-private：不寫 modifier，只有 package 內可見。</li>
+</ul>
+<hr>
+<h2 id="13-4-constructor">13.4 Constructor</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public ProductTradingService(ProductTradingRepository repository) {
+    this.repository = repository;
+}
+</code></pre>
+</div><p><code>this.repository</code>：目前 object 的 field。</p>
+<p>Spring 專案使用 constructor injection，讓 dependency 明確而且容易 test。</p>
+<hr>
+<h2 id="13-5-field-final">13.5 Field / <code>final</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">private final ProductTradingRepository repository;
+</code></pre>
+</div><p><code>final</code> 在這裡代表 reference 初始化後不重新指向別的 object。</p>
+<p>常見 static constant：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">private static final Logger log =
+    LoggerFactory.getLogger(ProductTradingService.class);
+</code></pre>
+</div><hr>
+<h2 id="13-6-method">13.6 Method</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public Product getProduct(long prodId) {
+    // ...
+}
+</code></pre>
+</div><p>拆解：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">public          access
+Product         return type
+getProduct      method name
+(long prodId)   parameters
+</code></pre>
+</div><p>Void method：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public void deleteTrading(long tradingId) {
+}
+</code></pre>
+</div><hr>
+<h2 id="13-7-primitive-與常見-reference-type">13.7 Primitive 與常見 Reference Type</h2>
+<p>專案中主要會看到：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">long id;
+int count;
+String name;
+BigDecimal amount;
+LocalDate tradeDate;
+Instant timestamp;
+</code></pre>
+</div><h3 id="為什麼金額不用-double">為什麼金額不用 <code>double</code>？</h3>
+<p>保險、交易、會計類金額應使用：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">BigDecimal
+</code></pre>
+</div><p>避免 binary floating-point 精度問題。</p>
+<hr>
+<h2 id="13-8-record">13.8 <code>record</code></h2>
+<p>DTO / Command / Domain value 很適合：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public record UpdateProductCommand(
+    String prodName,
+    String prodCategory,
+    ProductStatus prodStatus,
+    String currencyCode,
+    BigDecimal listPrice,
+    long expectedRowVersion
+) {
+}
+</code></pre>
+</div><p>Record 自動提供主要 constructor、accessor、<code>equals</code>、<code>hashCode</code>、<code>toString</code>。</p>
+<p>讀值：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">command.prodName()
+</code></pre>
+</div><p>不是傳統 Bean：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">command.getProdName()
+</code></pre>
+</div><hr>
+<h2 id="13-9-enum">13.9 <code>enum</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public enum ProductStatus {
+    ACTIVE,
+    INACTIVE
+}
+</code></pre>
+</div><p>Trading：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public enum TradeType {
+    BUY,
+    SELL
+}
+</code></pre>
+</div><p>用途：把合法值限制在有限集合，而不是到處傳任意 String。</p>
+<hr>
+<h2 id="13-10-interface">13.10 <code>interface</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public interface ProductTradingRepository {
+    Optional&lt;Product&gt; findProduct(long prodId);
+    List&lt;Trading&gt; findTradingByProduct(long prodId);
+}
+</code></pre>
+</div><p>Domain 定義「需要什麼能力」，Infrastructure 實作 SQL 細節。</p>
+<p>Implementation：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public class JdbcProductTradingRepository
+        implements ProductTradingRepository {
+}
+</code></pre>
+</div><hr>
+<h2 id="13-11-extends">13.11 <code>extends</code></h2>
+<p>Exception：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public class NotFoundException extends RuntimeException {
+}
+</code></pre>
+</div><p>表示 inheritance。</p>
+<hr>
+<h2 id="13-12-generic-list-optional-map">13.12 Generic：<code>List&lt;T&gt;</code> / <code>Optional&lt;T&gt;</code> / <code>Map&lt;K,V&gt;</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">List&lt;Product&gt; products;
+Optional&lt;Product&gt; product;
+Map&lt;String, Object&gt; details;
+</code></pre>
+</div><p><code>&lt;T&gt;</code> 指 container 內的 type。</p>
+<h3 id="optional">Optional</h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">return repository.findProduct(prodId)
+    .orElseThrow(() -&gt; new NotFoundException(&quot;找不到產品&quot;));
+</code></pre>
+</div><p>語意是：結果可能不存在，但不要用裸 <code>null</code> 隱藏這件事。</p>
+<hr>
+<h2 id="13-13-lambda">13.13 Lambda</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">item -&gt; item.amount()
+</code></pre>
+</div><p>多行：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">item -&gt; {
+    log.info(&quot;item={}&quot;, item);
+    return item.amount();
+}
+</code></pre>
+</div><p>專案中常出現在：</p>
+<ul>
+<li>Stream <code>.map(...)</code></li>
+<li><code>orElseThrow(() -&gt; ...)</code></li>
+<li>Result mapping / callback</li>
+</ul>
+<hr>
+<h2 id="13-14-method-reference">13.14 Method Reference</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">ProductTradingApiMapper::toResponse
+</code></pre>
+</div><p>相當於：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">item -&gt; ProductTradingApiMapper.toResponse(item)
+</code></pre>
+</div><p>Instance method reference：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">this::mapProduct
+</code></pre>
+</div><hr>
+<h2 id="13-15-stream-api">13.15 Stream API</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">return products.stream()
+    .map(ProductTradingApiMapper::toResponse)
+    .toList();
+</code></pre>
+</div><p>讀法：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">List
+ ↓ stream()
+逐筆資料流
+ ↓ map()
+轉換
+ ↓ toList()
+重新收集成 List
+</code></pre>
+</div><hr>
+<h2 id="13-16-var">13.16 <code>var</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">var result = repository.findDashboardSummary();
+</code></pre>
+</div><p>Compiler 仍知道 type，只是由右側推導。</p>
+<p>教學上要區分：Java <code>var</code> <strong>不是</strong> JavaScript 的動態型別。</p>
+<hr>
+<h2 id="13-17-java-text-block">13.17 Java Text Block <code>&quot;&quot;&quot;</code></h2>
+<p>專案 SQL 很適合：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">String sql = &quot;&quot;&quot;
+    SELECT
+        PROD_ID,
+        PROD_CODE,
+        PROD_NAME
+    FROM SAMPLE_PROD
+    ORDER BY PROD_CODE
+    &quot;&quot;&quot;;
+</code></pre>
+</div><p>比大量 <code>&quot;...&quot; +</code> 更適合 Human Review SQL。</p>
+<hr>
+<h2 id="13-18-if">13.18 <code>if</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">if (updatedRows == 0) {
+    throw new ConflictException(&quot;資料已被其他人修改&quot;);
+}
+</code></pre>
+</div><hr>
+<h2 id="13-19-ternary-operator">13.19 Ternary Operator</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">String value = remark == null ? &quot;&quot; : remark;
+</code></pre>
+</div><p>形式：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">condition ? whenTrue : whenFalse
+</code></pre>
+</div><hr>
+<h2 id="13-20-exception">13.20 Exception</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">throw new NotFoundException(&quot;找不到產品&quot;);
+</code></pre>
+</div><p>Catch：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">try {
+    // ...
+} catch (RuntimeException ex) {
+    // ...
+}
+</code></pre>
+</div><p>不應用 exception 取代正常 Business branching；它適合表達 abnormal/error flow。</p>
+<hr>
+<h2 id="13-21-override">13.21 <code>@Override</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Override
+public Optional&lt;Product&gt; findProduct(long prodId) {
+}
+</code></pre>
+</div><p>告訴 compiler：此 method 應該是實作 / 覆寫 parent/interface method。</p>
+<p>如果 signature 不匹配，compiler 會協助抓錯。</p>
+<hr>
+<h2 id="13-22-bigdecimal">13.22 <code>BigDecimal</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">amount = quantity
+    .multiply(unitPrice)
+    .setScale(2, RoundingMode.HALF_UP);
+</code></pre>
+</div><p>需要理解：</p>
+<ul>
+<li><code>multiply()</code> 不會改原物件，會回傳新的 BigDecimal。</li>
+<li><code>setScale()</code> 明確定義小數位與 rounding rule。</li>
+</ul>
+<hr>
+<h2 id="13-23-date-time">13.23 Date / Time</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">LocalDate tradeDate;
+Instant createdAt;
+</code></pre>
+</div><ul>
+<li><code>LocalDate</code>：只有年月日，例如 Trade Date。</li>
+<li><code>Instant</code>：時間軸上的 UTC instant，適合 audit timestamp。</li>
+</ul>
+<h3 id="中文延伸閱讀">中文延伸閱讀</h3>
+<ul>
+<li><a href="https://liaoxuefeng.com/books/java/quick-start/basic/index.html">廖雪峰 Java 教程：Java 基礎</a></li>
+<li><a href="https://liaoxuefeng.com/books/java/oop/core/record/index.html">廖雪峰 Java：Record</a></li>
+<li><a href="https://liaoxuefeng.com/books/java/oop/core/bigdecimal/index.html">廖雪峰 Java：BigDecimal</a></li>
+<li><a href="https://liaoxuefeng.com/books/java/datetime/local-datetime/index.html">廖雪峰 Java：LocalDateTime / 日期時間</a></li>
+</ul>
+<hr>
+<h1 id="14-spring-boot-啟動與-dependency-injection">14. Spring Boot 啟動與 Dependency Injection</h1>
+<h2 id="14-1-springbootapplication">14.1 <code>@SpringBootApplication</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@SpringBootApplication
+public class SampleApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SampleApplication.class, args);
+    }
+}
+</code></pre>
+</div><h3 id="public-static-void-main"><code>public static void main</code></h3>
+<p>Java Application entry point。</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">java -jar xxx.jar
+       ↓
+main()
+       ↓
+SpringApplication.run()
+       ↓
+Spring 建立 ApplicationContext
+       ↓
+建立 Bean / 啟動 Embedded Tomcat
+</code></pre>
+</div><h3 id="springbootapplication"><code>@SpringBootApplication</code></h3>
+<p>可以把它理解成 Spring Boot 應用的總入口 annotation，啟用 component scanning 與 auto configuration 等核心機制。</p>
+<hr>
+<h2 id="15-spring-bean-stereotype">15. Spring Bean Stereotype</h2>
+<p>專案使用：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Service
+@Repository
+@Component
+</code></pre>
+</div><p>概念上都是：</p>
+<blockquote>
+<p>讓 Spring 管理這個 object 的生命週期與 dependency。</p>
+</blockquote>
+<h3 id="service"><code>@Service</code></h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Service
+public class ProductTradingService {
+}
+</code></pre>
+</div><p>代表 Application / Business service。</p>
+<h3 id="repository"><code>@Repository</code></h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Repository
+public class JdbcProductTradingRepository
+        implements ProductTradingRepository {
+}
+</code></pre>
+</div><p>代表 persistence adapter。</p>
+<h3 id="component"><code>@Component</code></h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Component
+public class AuditUserProvider {
+}
+</code></pre>
+</div><p>一般 Spring-managed component。</p>
+<hr>
+<h1 id="16-spring-mvc-rest-controller">16. Spring MVC REST Controller</h1>
+<h2 id="16-1-restcontroller">16.1 <code>@RestController</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@RestController
+@RequestMapping(&quot;/api/products&quot;)
+public class ProductTradingController {
+}
+</code></pre>
+</div><p><code>@RestController</code> 表示 method 回傳值預設序列化成 HTTP response body（通常 JSON）。</p>
+<hr>
+<h2 id="16-2-requestmapping">16.2 <code>@RequestMapping</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@RequestMapping(&quot;/api/products&quot;)
+</code></pre>
+</div><p>設定 controller 共用 URL prefix。</p>
+<hr>
+<h2 id="16-3-getmapping">16.3 <code>@GetMapping</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@GetMapping
+public List&lt;ProductResponse&gt; getProducts() {
+}
+</code></pre>
+</div><p>代表：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">GET /api/products
+</code></pre>
+</div><p>Path variable：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@GetMapping(&quot;/{prodId}&quot;)
+public ProductResponse getProduct(
+        @PathVariable long prodId) {
+}
+</code></pre>
+</div><p>對應：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">GET /api/products/1
+</code></pre>
+</div><hr>
+<h2 id="16-4-postmapping">16.4 <code>@PostMapping</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@PostMapping(&quot;/{prodId}/trading&quot;)
+@ResponseStatus(HttpStatus.CREATED)
+public TradingResponse createTrading(...) {
+}
+</code></pre>
+</div><p>對應新增資源。</p>
+<hr>
+<h2 id="16-5-putmapping">16.5 <code>@PutMapping</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@PutMapping(&quot;/{prodId}&quot;)
+public ProductResponse updateProduct(...) {
+}
+</code></pre>
+</div><p>WUT1 Sample 用 PUT 表示更新 Product / Trading。</p>
+<hr>
+<h2 id="16-6-deletemapping">16.6 <code>@DeleteMapping</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@DeleteMapping(&quot;/{prodId}/trading/{tradingId}&quot;)
+@ResponseStatus(HttpStatus.NO_CONTENT)
+public void deleteTrading(...) {
+}
+</code></pre>
+</div><hr>
+<h2 id="16-7-pathvariable">16.7 <code>@PathVariable</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@PathVariable long prodId
+</code></pre>
+</div><p>從 URL path 取得值。</p>
+<hr>
+<h2 id="16-8-requestbody">16.8 <code>@RequestBody</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@RequestBody ProductUpdateRequest request
+</code></pre>
+</div><p>把 JSON request body 轉成 Java DTO。</p>
+<hr>
+<h2 id="16-9-requestparam">16.9 <code>@RequestParam</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@RequestParam long expectedRowVersion
+</code></pre>
+</div><p>從 query string 等 request parameter 取得值。</p>
+<hr>
+<h2 id="16-10-responsestatus">16.10 <code>@ResponseStatus</code></h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@ResponseStatus(HttpStatus.CREATED)
+</code></pre>
+</div><p>指定成功 response status，例如新增回 201。</p>
+<h3 id="中文延伸閱讀">中文延伸閱讀</h3>
+<ul>
+<li><a href="https://docs.springframework.org.cn/spring-framework/reference/web/webmvc/mvc-controller/ann-requestmapping.html">Spring MVC 中文文件：Request Mapping</a></li>
+<li><a href="https://docs.springframework.org.cn/spring-framework/reference/web/webmvc/mvc-controller/ann-methods/requestbody.html">Spring MVC 中文文件：RequestBody</a></li>
+</ul>
+<hr>
+<h1 id="17-bean-validation">17. Bean Validation</h1>
+<p>DTO 會看到：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@NotBlank
+@Size(max = 100)
+String prodName
+</code></pre>
+</div><div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@NotNull
+@DecimalMin(&quot;0.00&quot;)
+BigDecimal listPrice
+</code></pre>
+</div><div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Pattern(regexp = &quot;[A-Z]{3}&quot;)
+String currencyCode
+</code></pre>
+</div><p>Controller：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public ProductResponse update(
+    @Valid @RequestBody ProductUpdateRequest request
+) {
+}
+</code></pre>
+</div><h3 id="annotation-語意">Annotation 語意</h3>
+<table>
+<thead>
+<tr>
+<th>Annotation</th>
+<th>驗證</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@NotNull</code></td>
+<td>不能是 null</td>
+</tr>
+<tr>
+<td><code>@NotBlank</code></td>
+<td>String 不能 null/空/全空白</td>
+</tr>
+<tr>
+<td><code>@Size</code></td>
+<td>String / collection 長度</td>
+</tr>
+<tr>
+<td><code>@Pattern</code></td>
+<td>Regex</td>
+</tr>
+<tr>
+<td><code>@DecimalMin</code></td>
+<td>數值下限</td>
+</tr>
+<tr>
+<td><code>@Valid</code></td>
+<td>要求驗證 nested/request object</td>
+</tr>
+<tr>
+<td><code>@Validated</code></td>
+<td>啟用 Spring method validation 等情境</td>
+</tr>
+</tbody>
+</table>
+<p>Validation 的價值：</p>
+<blockquote>
+<p>不要讓不合法輸入一路走到 SQL 或 Business Logic 才爆炸。</p>
+</blockquote>
+<h3 id="中文延伸閱讀">中文延伸閱讀</h3>
+<ul>
+<li><a href="https://docs.springframework.org.cn/spring-boot/reference/io/validation.html">Spring Boot 中文文件：Validation</a></li>
+</ul>
+<hr>
+<h1 id="18-dto-command-domain-model-為什麼不混在一起">18. DTO / Command / Domain Model 為什麼不混在一起</h1>
+<h3 id="request-dto">Request DTO</h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">HTTP JSON
+ ↓
+ProductUpdateRequest
+</code></pre>
+</div><h3 id="command">Command</h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">ProductUpdateRequest
+ ↓ mapping
+UpdateProductCommand
+</code></pre>
+</div><h3 id="domain">Domain</h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">Product
+Trading
+ProductStatus
+TradeType
+</code></pre>
+</div><h3 id="response-dto">Response DTO</h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">Product
+ ↓ mapper
+ProductResponse
+ ↓ JSON
+Browser
+</code></pre>
+</div><p>這個教學的目的不是要求 Citizen 使用這種分層，而是讓 IT 開發理解：</p>
+<blockquote>
+<p>API contract、Application use case、Domain data structure 是不同責任。</p>
+</blockquote>
+<hr>
+<h1 id="19-transactional">19. <code>@Transactional</code></h1>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Transactional
+public Trading createTrading(...) {
+    // 多個 DB operation
+}
+</code></pre>
+</div><p>Transaction 的核心概念：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">全部成功 → COMMIT
+任一步失敗 → ROLLBACK
+</code></pre>
+</div><p>教學時要連到 Business 意義，例如：</p>
+<blockquote>
+<p>不要只更新 Trading 一半就留下正式狀態。</p>
+</blockquote>
+<hr>
+<h1 id="20-repository-pattern-jdbcclient">20. Repository Pattern + <code>JdbcClient</code></h1>
+<p>Domain interface：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public interface ProductTradingRepository {
+    List&lt;Product&gt; findProducts();
+}
+</code></pre>
+</div><p>Infrastructure：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Repository
+public class JdbcProductTradingRepository
+        implements ProductTradingRepository {
+
+    private final JdbcClient jdbcClient;
+}
+</code></pre>
+</div><h2 id="20-1-fluent-api">20.1 Fluent API</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">jdbcClient.sql(sql)
+    .param(&quot;prodId&quot;, prodId)
+    .query(this::mapProduct)
+    .optional();
+</code></pre>
+</div><p>逐段：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">.sql(sql)             指定 SQL
+.param(...)           綁定參數
+.query(...)           定義 query / mapping
+.optional() / list()  取得結果
+</code></pre>
+</div><p>Update：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">int affected = jdbcClient.sql(sql)
+    .param(&quot;prodId&quot;, prodId)
+    .param(&quot;rowVersion&quot;, rowVersion)
+    .update();
+</code></pre>
+</div><h3 id="為什麼不用字串拼-sql">為什麼不用字串拼 SQL？</h3>
+<p>不要：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">&quot;WHERE PROD_ID = &quot; + prodId
+</code></pre>
+</div><p>應該：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-sql">WHERE PROD_ID = :prodId
+</code></pre>
+</div><p>再 <code>.param()</code>，除了清楚，也避免 SQL injection 類型問題。</p>
+<h3 id="中文延伸閱讀">中文延伸閱讀</h3>
+<ul>
+<li><a href="https://docs.springframework.org.cn/spring-framework/reference/data-access/jdbc/core.html">Spring Framework 中文文件：JdbcClient / JDBC Core</a></li>
+<li><a href="https://liaoxuefeng.com/books/java/jdbc/query/index.html">廖雪峰 Java：JDBC Query</a></li>
+</ul>
+<hr>
+<h1 id="21-resultset-mapping">21. ResultSet Mapping</h1>
+<p>典型概念：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">private Product mapProduct(ResultSet rs, int rowNum)
+        throws SQLException {
+    return new Product(
+        rs.getLong(&quot;PROD_ID&quot;),
+        rs.getString(&quot;PROD_CODE&quot;),
+        rs.getString(&quot;PROD_NAME&quot;)
+    );
+}
+</code></pre>
+</div><p>需要理解：</p>
+<ul>
+<li>SQL column name 使用 DB 的全大寫 convention。</li>
+<li>Java domain property 保持 Java naming convention。</li>
+<li>Mapping 是兩個世界的邊界。</li>
+</ul>
+<hr>
+<h1 id="22-error-handling">22. Error Handling</h1>
+<p>Custom exception：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">public class ConflictException extends RuntimeException {
+}
+</code></pre>
+</div><p>Global handler：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity&lt;ApiError&gt; handleNotFound(...) {
+        // ...
+    }
+}
+</code></pre>
+</div><h3 id="restcontrolleradvice"><code>@RestControllerAdvice</code></h3>
+<p>把跨 Controller 的 error mapping 集中管理。</p>
+<h3 id="exceptionhandler"><code>@ExceptionHandler</code></h3>
+<p>指定哪些 exception 由哪個 method 處理。</p>
+<h3 id="responseentity"><code>ResponseEntity</code></h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">return ResponseEntity
+    .status(HttpStatus.NOT_FOUND)
+    .body(error);
+</code></pre>
+</div><p>這是明確控制 HTTP status + body。</p>
+<hr>
+<h1 id="23-logging-audit">23. Logging / Audit</h1>
+<p>SLF4J：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">private static final Logger log =
+    LoggerFactory.getLogger(ProductTradingService.class);
+</code></pre>
+</div><div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">log.info(&quot;Update product prodId={}, user={}&quot;, prodId, user);
+</code></pre>
+</div><p>不要：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">System.out.println(...)
+</code></pre>
+</div><p>正式 Audit 與一般 debug log 是不同概念；Sample 的 <code>AuditUserProvider</code> 是為未來 Keycloak user identity 留邊界，不代表正式 Auth 已完成。</p>
+<hr>
+<h1 id="24-value-與-application-yml">24. <code>@Value</code> 與 application.yml</h1>
+<p>Java：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Value(&quot;${app.audit.default-user:LOCAL_DEMO}&quot;)
+private String defaultUser;
+</code></pre>
+</div><p>YAML：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-yaml">app:
+  audit:
+    default-user: ${APP_DEFAULT_USER:LOCAL_DEMO}
+</code></pre>
+</div><p>意思：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">優先讀環境變數 APP_DEFAULT_USER
+沒有 → LOCAL_DEMO
+</code></pre>
+</div><h3 id="中文延伸閱讀">中文延伸閱讀</h3>
+<ul>
+<li><a href="https://docs.springframework.org.cn/spring-boot/reference/features/external-config.html">Spring Boot 中文文件：外部化配置</a></li>
+</ul>
+<hr>
+<h1 id="25-yaml-語法">25. YAML 語法</h1>
+<p>專案：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-yaml">spring:
+  application:
+    name: wut1-it-app-template
+  profiles:
+    default: local
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+</code></pre>
+</div><p>重要語法：</p>
+<ul>
+<li>縮排代表 hierarchy。</li>
+<li><code>key: value</code>。</li>
+<li>不使用 tab 做 indentation。</li>
+<li><code>${ENV:default}</code> 是 Spring property placeholder，不是 YAML 原生功能。</li>
+</ul>
+<p>List：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-yaml">include:
+  - health
+  - info
+</code></pre>
+</div><p>或某些 Spring property 接受逗號字串：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-yaml">include: health,info
+</code></pre>
+</div><hr>
+<h1 id="26-spring-profiles">26. Spring Profiles</h1>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-yaml">spring:
+  profiles:
+    default: local
+</code></pre>
+</div><p>Files：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">application.yml
+application-local.yml
+</code></pre>
+</div><p>心智模型：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">共同設定
+application.yml
+      +
+local 專用覆寫
+application-local.yml
+</code></pre>
+</div><p>WUT1 Local profile 使用 SQLite。</p>
+<hr>
+<h1 id="27-hikari-datasource-sqlite-url">27. Hikari / DataSource / SQLite URL</h1>
+<p>Local configuration 會有 JDBC URL：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">jdbc:sqlite:./data/wut1-sample.db
+</code></pre>
+</div><p>Spring Boot 建 DataSource，Repository 透過 JdbcClient 使用。</p>
+<p>教學重點不是背 Hikari parameter，而是知道：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">Repository
+ ↓
+JdbcClient
+ ↓
+DataSource / Connection Pool
+ ↓
+SQLite JDBC Driver
+ ↓
+.db file
+</code></pre>
+</div><hr>
+<h1 id="28-spring-sql-init">28. Spring SQL Init</h1>
+<p>Local Standalone 版本會利用 Spring SQL initialization 載入：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">classpath:db/CURRENT_SCHEMA.sql
+classpath:db/LOCAL_SAMPLE_DATA.sql
+</code></pre>
+</div><p>這是 <strong>Local 教學環境例外</strong>。</p>
+<p>正式企業 DB 原則仍是：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">Application 不自行 migration Production Schema
+DB schema change → 人工填單 / 審核 / 執行
+Repo 只保留最新版 approved CURRENT_SCHEMA.sql
+</code></pre>
+</div><p>不要把 Local initialization 誤解成 Production Flyway。</p>
+<hr>
+<h1 id="29-spring-actuator">29. Spring Actuator</h1>
+<p>設定：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-yaml">management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+</code></pre>
+</div><p>會提供例如：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">/actuator/health
+</code></pre>
+</div><p>用途是 Operational Health，不是 Business API。</p>
+<h3 id="中文延伸閱讀">中文延伸閱讀</h3>
+<ul>
+<li><a href="https://docs.springframework.org.cn/spring-boot/reference/actuator/endpoints.html">Spring Boot 中文文件：Actuator Endpoints</a></li>
+</ul>
+<hr>
+<h1 id="30-spring-modulith">30. Spring Modulith</h1>
+<p>Package：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@org.springframework.modulith.ApplicationModule
+package com.example.wut1sample.producttrading;
+</code></pre>
+</div><p>Architecture test：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Test
+void verifiesModuleStructure() {
+    ApplicationModules.of(SampleApplication.class).verify();
+}
+</code></pre>
+</div><p>目的：把「架構規範」變成 executable rule。</p>
+<p>可以檢查：</p>
+<ul>
+<li>Module cycle。</li>
+<li>不合法的跨 module internal access。</li>
+<li>額外宣告的 module dependency rule。</li>
+</ul>
+<h3 id="中文延伸閱讀">中文延伸閱讀</h3>
+<ul>
+<li><a href="https://docs.springframework.tw/spring-modulith/reference/verification.html">Spring Modulith 繁中：驗證應用程式模組結構</a></li>
+</ul>
+<hr>
+<h1 id="31-junit-spring-boot-test-assertj">31. JUnit / Spring Boot Test / AssertJ</h1>
+<h3 id="test"><code>@Test</code></h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Test
+void calculatesTradeAmount() {
+}
+</code></pre>
+</div><h3 id="spring-integration-test">Spring Integration Test</h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@SpringBootTest
+@ActiveProfiles(&quot;local&quot;)
+class LocalSqliteIntegrationTest {
+}
+</code></pre>
+</div><h3 id="injection-in-test">Injection in Test</h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">@Autowired
+ProductTradingService service;
+</code></pre>
+</div><h3 id="assertj">AssertJ</h3>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">assertThat(products).hasSize(5);
+assertThat(result).isEqualByComparingTo(&quot;306550.00&quot;);
+</code></pre>
+</div><p>Exception assertion：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-java">assertThatThrownBy(() -&gt; service.update(...))
+    .isInstanceOf(ConflictException.class);
+</code></pre>
+</div><p>Test 教學必須強調：</p>
+<blockquote>
+<p>Agent 說「完成」不是證據；可重複執行的 test 才是證據的一部分。</p>
+</blockquote>
+<hr>
+<h1 id="32-maven-pom-xml">32. Maven POM / XML</h1>
+<h2 id="32-1-xml-基礎">32.1 XML 基礎</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-xml">&lt;project&gt;
+  &lt;groupId&gt;com.example&lt;/groupId&gt;
+  &lt;artifactId&gt;wut1-it-app-template&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/project&gt;
+</code></pre>
+</div><p>XML 是 element tree。</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">&lt;tag&gt;value&lt;/tag&gt;
+</code></pre>
+</div><hr>
+<h2 id="32-2-parent">32.2 Parent</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-xml">&lt;parent&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+  &lt;version&gt;4.1.1&lt;/version&gt;
+&lt;/parent&gt;
+</code></pre>
+</div><p>從 parent 繼承 Spring Boot dependency / plugin management。</p>
+<hr>
+<h2 id="32-3-properties">32.3 Properties</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-xml">&lt;properties&gt;
+  &lt;java.version&gt;25&lt;/java.version&gt;
+  &lt;node.version&gt;v22.16.0&lt;/node.version&gt;
+&lt;/properties&gt;
+</code></pre>
+</div><p>引用：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-xml">&lt;version&gt;${some.version}&lt;/version&gt;
+</code></pre>
+</div><hr>
+<h2 id="32-4-modules">32.4 Modules</h2>
+<p>Root POM：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-xml">&lt;packaging&gt;pom&lt;/packaging&gt;
+&lt;modules&gt;
+  &lt;module&gt;backend&lt;/module&gt;
+&lt;/modules&gt;
+</code></pre>
+</div><p>這表示 root 主要是 build orchestration，不產 executable application。</p>
+<hr>
+<h2 id="32-5-dependency">32.5 Dependency</h2>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-xml">&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-webmvc&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+</div><p>Test scope：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-xml">&lt;scope&gt;test&lt;/scope&gt;
+</code></pre>
+</div><hr>
+<h2 id="32-6-plugin-execution">32.6 Plugin / Execution</h2>
+<p>Frontend Maven Plugin 概念：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">Maven build
+ ↓
+安裝 Node/npm
+ ↓
+npm install
+ ↓
+npm run build
+ ↓
+Vite dist/
+ ↓
+copy 到 Spring Boot static/
+ ↓
+package JAR
+</code></pre>
+</div><p>XML 會看到：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-xml">&lt;plugin&gt;
+  &lt;executions&gt;
+    &lt;execution&gt;
+      &lt;phase&gt;generate-resources&lt;/phase&gt;
+      &lt;goals&gt;
+        &lt;goal&gt;npm&lt;/goal&gt;
+      &lt;/goals&gt;
+    &lt;/execution&gt;
+  &lt;/executions&gt;
+&lt;/plugin&gt;
+</code></pre>
+</div><h3 id="maven-lifecycle">Maven Lifecycle</h3>
+<p>常用：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">clean
+compile
+test
+package
+verify
+</code></pre>
+</div><p><code>mvn package</code> 會依 lifecycle 跑前面必要 phase，不是只執行一個孤立動作。</p>
+<h3 id="中文延伸閱讀">中文延伸閱讀</h3>
+<ul>
+<li><a href="https://maven.org.cn/guides/introduction/introduction-to-the-lifecycle.html">Maven 中文：Build Lifecycle</a></li>
+</ul>
+<hr>
+<h1 id="33-executable-jar">33. Executable JAR</h1>
+<p>Build：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-powershell">.\mvnw.cmd clean package
+</code></pre>
+</div><p>Output：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">backend/target/wut1-it-app-template.jar
+</code></pre>
+</div><p>Run：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-powershell">java -jar backend\target\wut1-it-app-template.jar
+</code></pre>
+</div><p>Runtime：</p>
+<div class="doc-code"><button class="doc-copy-btn" type="button" data-copy-code>複製</button><pre><code class="language-text">JAR
+├─ Spring Boot code
+├─ Embedded Tomcat
+├─ Vue / React build 後的 static files
+└─ classpath SQL sample files
+</code></pre>
+</div><p>所以 Production / standalone run 不需要啟動 Vite。</p>
+</article><nav class="docs-chapter-pager" aria-label="章節切換"><a class="btn btn-outline-secondary btn-sm" href="../chapters/03-shared-web-foundations.html">← 共同 Web 基礎</a><a class="btn btn-primary btn-sm" href="../chapters/05-vue-path.html">IT Vue 路線 →</a></nav></div></main></div><button id="backTop" class="btn btn-primary docs-back-top" aria-label="回到頂端">↑</button><script>window.ACADEMY_SEARCH_INDEX=[{"title":"導讀：這份教學要解決什麼問題","level":"h1","slug":"00-overview","pageTitle":"導讀：這份教學要解決什麼問題","anchor":"導讀-這份教學要解決什麼問題","href":"../chapters/00-overview.html#導讀-這份教學要解決什麼問題"},{"title":"0. 這份文件要解決什麼問題","level":"h2","slug":"00-overview","pageTitle":"導讀：這份教學要解決什麼問題","anchor":"0-這份文件要解決什麼問題","href":"../chapters/00-overview.html#0-這份文件要解決什麼問題"},{"title":"「所有語法」的範圍定義","level":"h3","slug":"00-overview","pageTitle":"導讀：這份教學要解決什麼問題","anchor":"所有語法-的範圍定義","href":"../chapters/00-overview.html#所有語法-的範圍定義"},{"title":"教學網站設計","level":"h1","slug":"01-teaching-site-design","pageTitle":"教學網站設計","anchor":"教學網站設計","href":"../chapters/01-teaching-site-design.html#教學網站設計"},{"title":"1. 教學網站資訊架構（IA）","level":"h2","slug":"01-teaching-site-design","pageTitle":"教學網站設計","anchor":"1-教學網站資訊架構-ia","href":"../chapters/01-teaching-site-design.html#1-教學網站資訊架構-ia"},{"title":"2. 每一個教學頁都使用同一個模板","level":"h2","slug":"01-teaching-site-design","pageTitle":"教學網站設計","anchor":"2-每一個教學頁都使用同一個模板","href":"../chapters/01-teaching-site-design.html#2-每一個教學頁都使用同一個模板"},{"title":"教學網站的核心原則","level":"h3","slug":"01-teaching-site-design","pageTitle":"教學網站設計","anchor":"教學網站的核心原則","href":"../chapters/01-teaching-site-design.html#教學網站的核心原則"},{"title":"三種架構總覽","level":"h1","slug":"02-three-architectures","pageTitle":"三種架構總覽","anchor":"三種架構總覽","href":"../chapters/02-three-architectures.html#三種架構總覽"},{"title":"3. 三種架構總覽","level":"h2","slug":"02-three-architectures","pageTitle":"三種架構總覽","anchor":"3-三種架構總覽","href":"../chapters/02-three-architectures.html#3-三種架構總覽"},{"title":"3.1 IT Vue","level":"h3","slug":"02-three-architectures","pageTitle":"三種架構總覽","anchor":"3-1-it-vue","href":"../chapters/02-three-architectures.html#3-1-it-vue"},{"title":"3.2 IT React","level":"h3","slug":"02-three-architectures","pageTitle":"三種架構總覽","anchor":"3-2-it-react","href":"../chapters/02-three-architectures.html#3-2-it-react"},{"title":"3.3 Citizen Python","level":"h3","slug":"02-three-architectures","pageTitle":"三種架構總覽","anchor":"3-3-citizen-python","href":"../chapters/02-three-architectures.html#3-3-citizen-python"},{"title":"4. 三套專案共同的 Business Example","level":"h2","slug":"02-three-architectures","pageTitle":"三種架構總覽","anchor":"4-三套專案共同的-business-example","href":"../chapters/02-three-architectures.html#4-三套專案共同的-business-example"},{"title":"共同 Web 基礎","level":"h1","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"共同-web-基礎","href":"../chapters/03-shared-web-foundations.html#共同-web-基礎"},{"title":"5. HTTP / REST / JSON","level":"h2","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"5-http-rest-json","href":"../chapters/03-shared-web-foundations.html#5-http-rest-json"},{"title":"5.1 Request / Response","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"5-1-request-response","href":"../chapters/03-shared-web-foundations.html#5-1-request-response"},{"title":"5.2 專案實際使用的 HTTP Method","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"5-2-專案實際使用的-http-method","href":"../chapters/03-shared-web-foundations.html#5-2-專案實際使用的-http-method"},{"title":"5.3 JSON","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"5-3-json","href":"../chapters/03-shared-web-foundations.html#5-3-json"},{"title":"Human Review 重點","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"human-review-重點","href":"../chapters/03-shared-web-foundations.html#human-review-重點"},{"title":"中文延伸閱讀","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"中文延伸閱讀","href":"../chapters/03-shared-web-foundations.html#中文延伸閱讀"},{"title":"6. HTML：三套 Frontend 都離不開的底層","level":"h2","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"6-html-三套-frontend-都離不開的底層","href":"../chapters/03-shared-web-foundations.html#6-html-三套-frontend-都離不開的底層"},{"title":"6.1 專案會看到的基本元素","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"6-1-專案會看到的基本元素","href":"../chapters/03-shared-web-foundations.html#6-1-專案會看到的基本元素"},{"title":"6.2 Attribute","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"6-2-attribute","href":"../chapters/03-shared-web-foundations.html#6-2-attribute"},{"title":"6.3 `<form>` 與 submit","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"6-3-與-submit","href":"../chapters/03-shared-web-foundations.html#6-3-與-submit"},{"title":"中文延伸閱讀","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"中文延伸閱讀","href":"../chapters/03-shared-web-foundations.html#中文延伸閱讀"},{"title":"7. CSS 與 Bootstrap 5","level":"h2","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"7-css-與-bootstrap-5","href":"../chapters/03-shared-web-foundations.html#7-css-與-bootstrap-5"},{"title":"7.1 常見 class 讀法","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"7-1-常見-class-讀法","href":"../chapters/03-shared-web-foundations.html#7-1-常見-class-讀法"},{"title":"7.2 自訂 CSS","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"7-2-自訂-css","href":"../chapters/03-shared-web-foundations.html#7-2-自訂-css"},{"title":"中文延伸閱讀","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"中文延伸閱讀","href":"../chapters/03-shared-web-foundations.html#中文延伸閱讀"},{"title":"8. JavaScript：Vue、React、Citizen 都會看到","level":"h2","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-javascript-vue-react-citizen-都會看到","href":"../chapters/03-shared-web-foundations.html#8-javascript-vue-react-citizen-都會看到"},{"title":"8.1 `const` / `let`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-1-const-let","href":"../chapters/03-shared-web-foundations.html#8-1-const-let"},{"title":"8.2 Function","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-2-function","href":"../chapters/03-shared-web-foundations.html#8-2-function"},{"title":"8.3 Object / Array","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-3-object-array","href":"../chapters/03-shared-web-foundations.html#8-3-object-array"},{"title":"8.4 Destructuring","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-4-destructuring","href":"../chapters/03-shared-web-foundations.html#8-4-destructuring"},{"title":"8.5 Spread Syntax","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-5-spread-syntax","href":"../chapters/03-shared-web-foundations.html#8-5-spread-syntax"},{"title":"8.6 Template Literal","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-6-template-literal","href":"../chapters/03-shared-web-foundations.html#8-6-template-literal"},{"title":"8.7 Optional Chaining `?.`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-7-optional-chaining","href":"../chapters/03-shared-web-foundations.html#8-7-optional-chaining"},{"title":"8.8 Nullish Coalescing `??`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-8-nullish-coalescing","href":"../chapters/03-shared-web-foundations.html#8-8-nullish-coalescing"},{"title":"8.9 Array Methods","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-9-array-methods","href":"../chapters/03-shared-web-foundations.html#8-9-array-methods"},{"title":"8.10 `async` / `await`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-10-async-await","href":"../chapters/03-shared-web-foundations.html#8-10-async-await"},{"title":"8.11 `try / catch / finally`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-11-try-catch-finally","href":"../chapters/03-shared-web-foundations.html#8-11-try-catch-finally"},{"title":"8.12 `Promise.all`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-12-promise-all","href":"../chapters/03-shared-web-foundations.html#8-12-promise-all"},{"title":"8.13 DOM API（Citizen 版特別重要）","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-13-dom-api-citizen-版特別重要","href":"../chapters/03-shared-web-foundations.html#8-13-dom-api-citizen-版特別重要"},{"title":"8.14 `innerHTML` 的安全風險","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"8-14-innerhtml-的安全風險","href":"../chapters/03-shared-web-foundations.html#8-14-innerhtml-的安全風險"},{"title":"中文延伸閱讀","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"中文延伸閱讀","href":"../chapters/03-shared-web-foundations.html#中文延伸閱讀"},{"title":"9. TypeScript：IT Vue / React 的共同基礎","level":"h2","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-typescript-it-vue-react-的共同基礎","href":"../chapters/03-shared-web-foundations.html#9-typescript-it-vue-react-的共同基礎"},{"title":"9.1 Primitive Type","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-1-primitive-type","href":"../chapters/03-shared-web-foundations.html#9-1-primitive-type"},{"title":"9.2 Interface","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-2-interface","href":"../chapters/03-shared-web-foundations.html#9-2-interface"},{"title":"9.3 Type Alias","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-3-type-alias","href":"../chapters/03-shared-web-foundations.html#9-3-type-alias"},{"title":"9.4 Union Type","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-4-union-type","href":"../chapters/03-shared-web-foundations.html#9-4-union-type"},{"title":"9.5 Optional Property","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-5-optional-property","href":"../chapters/03-shared-web-foundations.html#9-5-optional-property"},{"title":"9.6 Generic","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-6-generic","href":"../chapters/03-shared-web-foundations.html#9-6-generic"},{"title":"9.7 `unknown`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-7-unknown","href":"../chapters/03-shared-web-foundations.html#9-7-unknown"},{"title":"9.8 `Record<K, V>`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-8-record","href":"../chapters/03-shared-web-foundations.html#9-8-record"},{"title":"9.9 `readonly` / `as const`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-9-readonly-as-const","href":"../chapters/03-shared-web-foundations.html#9-9-readonly-as-const"},{"title":"9.10 Type Assertion `as`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-10-type-assertion-as","href":"../chapters/03-shared-web-foundations.html#9-10-type-assertion-as"},{"title":"9.11 `Promise<T>`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"9-11-promise","href":"../chapters/03-shared-web-foundations.html#9-11-promise"},{"title":"中文延伸閱讀","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"中文延伸閱讀","href":"../chapters/03-shared-web-foundations.html#中文延伸閱讀"},{"title":"10. SQLite / SQL：三個專案共同的資料層","level":"h2","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-sqlite-sql-三個專案共同的資料層","href":"../chapters/03-shared-web-foundations.html#10-sqlite-sql-三個專案共同的資料層"},{"title":"10.1 Schema DDL","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-1-schema-ddl","href":"../chapters/03-shared-web-foundations.html#10-1-schema-ddl"},{"title":"10.2 Index","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-2-index","href":"../chapters/03-shared-web-foundations.html#10-2-index"},{"title":"10.3 Sample Data","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-3-sample-data","href":"../chapters/03-shared-web-foundations.html#10-3-sample-data"},{"title":"10.4 SELECT","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-4-select","href":"../chapters/03-shared-web-foundations.html#10-4-select"},{"title":"10.5 JOIN / GROUP BY / Aggregate","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-5-join-group-by-aggregate","href":"../chapters/03-shared-web-foundations.html#10-5-join-group-by-aggregate"},{"title":"10.6 月別 Drill-down：`strftime`","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-6-月別-drill-down-strftime","href":"../chapters/03-shared-web-foundations.html#10-6-月別-drill-down-strftime"},{"title":"10.7 UPDATE + Optimistic Concurrency","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-7-update-optimistic-concurrency","href":"../chapters/03-shared-web-foundations.html#10-7-update-optimistic-concurrency"},{"title":"10.8 DELETE","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"10-8-delete","href":"../chapters/03-shared-web-foundations.html#10-8-delete"},{"title":"中文延伸閱讀","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"中文延伸閱讀","href":"../chapters/03-shared-web-foundations.html#中文延伸閱讀"},{"title":"11. ECharts：兩個 Dashboard 都使用的圖表模型","level":"h2","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"11-echarts-兩個-dashboard-都使用的圖表模型","href":"../chapters/03-shared-web-foundations.html#11-echarts-兩個-dashboard-都使用的圖表模型"},{"title":"11.1 Bar Chart","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"11-1-bar-chart","href":"../chapters/03-shared-web-foundations.html#11-1-bar-chart"},{"title":"11.2 Line Chart","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"11-2-line-chart","href":"../chapters/03-shared-web-foundations.html#11-2-line-chart"},{"title":"11.3 Click Event → Drill-down","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"11-3-click-event-drill-down","href":"../chapters/03-shared-web-foundations.html#11-3-click-event-drill-down"},{"title":"11.4 Resize","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"11-4-resize","href":"../chapters/03-shared-web-foundations.html#11-4-resize"},{"title":"中文延伸閱讀","level":"h3","slug":"03-shared-web-foundations","pageTitle":"共同 Web 基礎","anchor":"中文延伸閱讀","href":"../chapters/03-shared-web-foundations.html#中文延伸閱讀"},{"title":"IT 共用 Backend：Java 與 Spring Boot","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"it-共用-backend-java-與-spring-boot","href":"../chapters/04-it-backend.html#it-共用-backend-java-與-spring-boot"},{"title":"12. 先看懂 Backend Folder Structure","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"12-先看懂-backend-folder-structure","href":"../chapters/04-it-backend.html#12-先看懂-backend-folder-structure"},{"title":"13. Java 基本語法：專案中實際會看到的全部主要形式","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-java-基本語法-專案中實際會看到的全部主要形式","href":"../chapters/04-it-backend.html#13-java-基本語法-專案中實際會看到的全部主要形式"},{"title":"13.1 `package`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-1-package","href":"../chapters/04-it-backend.html#13-1-package"},{"title":"13.2 `import`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-2-import","href":"../chapters/04-it-backend.html#13-2-import"},{"title":"13.3 `class`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-3-class","href":"../chapters/04-it-backend.html#13-3-class"},{"title":"Access modifier","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"access-modifier","href":"../chapters/04-it-backend.html#access-modifier"},{"title":"13.4 Constructor","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-4-constructor","href":"../chapters/04-it-backend.html#13-4-constructor"},{"title":"13.5 Field / `final`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-5-field-final","href":"../chapters/04-it-backend.html#13-5-field-final"},{"title":"13.6 Method","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-6-method","href":"../chapters/04-it-backend.html#13-6-method"},{"title":"13.7 Primitive 與常見 Reference Type","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-7-primitive-與常見-reference-type","href":"../chapters/04-it-backend.html#13-7-primitive-與常見-reference-type"},{"title":"為什麼金額不用 `double`？","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"為什麼金額不用-double","href":"../chapters/04-it-backend.html#為什麼金額不用-double"},{"title":"13.8 `record`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-8-record","href":"../chapters/04-it-backend.html#13-8-record"},{"title":"13.9 `enum`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-9-enum","href":"../chapters/04-it-backend.html#13-9-enum"},{"title":"13.10 `interface`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-10-interface","href":"../chapters/04-it-backend.html#13-10-interface"},{"title":"13.11 `extends`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-11-extends","href":"../chapters/04-it-backend.html#13-11-extends"},{"title":"13.12 Generic：`List<T>` / `Optional<T>` / `Map<K,V>`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-12-generic-list-optional-map","href":"../chapters/04-it-backend.html#13-12-generic-list-optional-map"},{"title":"Optional","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"optional","href":"../chapters/04-it-backend.html#optional"},{"title":"13.13 Lambda","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-13-lambda","href":"../chapters/04-it-backend.html#13-13-lambda"},{"title":"13.14 Method Reference","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-14-method-reference","href":"../chapters/04-it-backend.html#13-14-method-reference"},{"title":"13.15 Stream API","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-15-stream-api","href":"../chapters/04-it-backend.html#13-15-stream-api"},{"title":"13.16 `var`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-16-var","href":"../chapters/04-it-backend.html#13-16-var"},{"title":"13.17 Java Text Block `\"\"\"`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-17-java-text-block","href":"../chapters/04-it-backend.html#13-17-java-text-block"},{"title":"13.18 `if`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-18-if","href":"../chapters/04-it-backend.html#13-18-if"},{"title":"13.19 Ternary Operator","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-19-ternary-operator","href":"../chapters/04-it-backend.html#13-19-ternary-operator"},{"title":"13.20 Exception","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-20-exception","href":"../chapters/04-it-backend.html#13-20-exception"},{"title":"13.21 `@Override`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-21-override","href":"../chapters/04-it-backend.html#13-21-override"},{"title":"13.22 `BigDecimal`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-22-bigdecimal","href":"../chapters/04-it-backend.html#13-22-bigdecimal"},{"title":"13.23 Date / Time","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"13-23-date-time","href":"../chapters/04-it-backend.html#13-23-date-time"},{"title":"中文延伸閱讀","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"中文延伸閱讀","href":"../chapters/04-it-backend.html#中文延伸閱讀"},{"title":"14. Spring Boot 啟動與 Dependency Injection","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"14-spring-boot-啟動與-dependency-injection","href":"../chapters/04-it-backend.html#14-spring-boot-啟動與-dependency-injection"},{"title":"14.1 `@SpringBootApplication`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"14-1-springbootapplication","href":"../chapters/04-it-backend.html#14-1-springbootapplication"},{"title":"`public static void main`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"public-static-void-main","href":"../chapters/04-it-backend.html#public-static-void-main"},{"title":"`@SpringBootApplication`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"springbootapplication","href":"../chapters/04-it-backend.html#springbootapplication"},{"title":"15. Spring Bean Stereotype","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"15-spring-bean-stereotype","href":"../chapters/04-it-backend.html#15-spring-bean-stereotype"},{"title":"`@Service`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"service","href":"../chapters/04-it-backend.html#service"},{"title":"`@Repository`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"repository","href":"../chapters/04-it-backend.html#repository"},{"title":"`@Component`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"component","href":"../chapters/04-it-backend.html#component"},{"title":"16. Spring MVC REST Controller","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-spring-mvc-rest-controller","href":"../chapters/04-it-backend.html#16-spring-mvc-rest-controller"},{"title":"16.1 `@RestController`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-1-restcontroller","href":"../chapters/04-it-backend.html#16-1-restcontroller"},{"title":"16.2 `@RequestMapping`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-2-requestmapping","href":"../chapters/04-it-backend.html#16-2-requestmapping"},{"title":"16.3 `@GetMapping`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-3-getmapping","href":"../chapters/04-it-backend.html#16-3-getmapping"},{"title":"16.4 `@PostMapping`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-4-postmapping","href":"../chapters/04-it-backend.html#16-4-postmapping"},{"title":"16.5 `@PutMapping`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-5-putmapping","href":"../chapters/04-it-backend.html#16-5-putmapping"},{"title":"16.6 `@DeleteMapping`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-6-deletemapping","href":"../chapters/04-it-backend.html#16-6-deletemapping"},{"title":"16.7 `@PathVariable`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-7-pathvariable","href":"../chapters/04-it-backend.html#16-7-pathvariable"},{"title":"16.8 `@RequestBody`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-8-requestbody","href":"../chapters/04-it-backend.html#16-8-requestbody"},{"title":"16.9 `@RequestParam`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-9-requestparam","href":"../chapters/04-it-backend.html#16-9-requestparam"},{"title":"16.10 `@ResponseStatus`","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"16-10-responsestatus","href":"../chapters/04-it-backend.html#16-10-responsestatus"},{"title":"中文延伸閱讀","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"中文延伸閱讀","href":"../chapters/04-it-backend.html#中文延伸閱讀"},{"title":"17. Bean Validation","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"17-bean-validation","href":"../chapters/04-it-backend.html#17-bean-validation"},{"title":"Annotation 語意","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"annotation-語意","href":"../chapters/04-it-backend.html#annotation-語意"},{"title":"中文延伸閱讀","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"中文延伸閱讀","href":"../chapters/04-it-backend.html#中文延伸閱讀"},{"title":"18. DTO / Command / Domain Model 為什麼不混在一起","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"18-dto-command-domain-model-為什麼不混在一起","href":"../chapters/04-it-backend.html#18-dto-command-domain-model-為什麼不混在一起"},{"title":"Request DTO","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"request-dto","href":"../chapters/04-it-backend.html#request-dto"},{"title":"Command","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"command","href":"../chapters/04-it-backend.html#command"},{"title":"Domain","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"domain","href":"../chapters/04-it-backend.html#domain"},{"title":"Response DTO","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"response-dto","href":"../chapters/04-it-backend.html#response-dto"},{"title":"19. `@Transactional`","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"19-transactional","href":"../chapters/04-it-backend.html#19-transactional"},{"title":"20. Repository Pattern + `JdbcClient`","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"20-repository-pattern-jdbcclient","href":"../chapters/04-it-backend.html#20-repository-pattern-jdbcclient"},{"title":"20.1 Fluent API","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"20-1-fluent-api","href":"../chapters/04-it-backend.html#20-1-fluent-api"},{"title":"為什麼不用字串拼 SQL？","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"為什麼不用字串拼-sql","href":"../chapters/04-it-backend.html#為什麼不用字串拼-sql"},{"title":"中文延伸閱讀","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"中文延伸閱讀","href":"../chapters/04-it-backend.html#中文延伸閱讀"},{"title":"21. ResultSet Mapping","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"21-resultset-mapping","href":"../chapters/04-it-backend.html#21-resultset-mapping"},{"title":"22. Error Handling","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"22-error-handling","href":"../chapters/04-it-backend.html#22-error-handling"},{"title":"`@RestControllerAdvice`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"restcontrolleradvice","href":"../chapters/04-it-backend.html#restcontrolleradvice"},{"title":"`@ExceptionHandler`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"exceptionhandler","href":"../chapters/04-it-backend.html#exceptionhandler"},{"title":"`ResponseEntity`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"responseentity","href":"../chapters/04-it-backend.html#responseentity"},{"title":"23. Logging / Audit","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"23-logging-audit","href":"../chapters/04-it-backend.html#23-logging-audit"},{"title":"24. `@Value` 與 application.yml","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"24-value-與-application-yml","href":"../chapters/04-it-backend.html#24-value-與-application-yml"},{"title":"中文延伸閱讀","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"中文延伸閱讀","href":"../chapters/04-it-backend.html#中文延伸閱讀"},{"title":"25. YAML 語法","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"25-yaml-語法","href":"../chapters/04-it-backend.html#25-yaml-語法"},{"title":"26. Spring Profiles","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"26-spring-profiles","href":"../chapters/04-it-backend.html#26-spring-profiles"},{"title":"27. Hikari / DataSource / SQLite URL","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"27-hikari-datasource-sqlite-url","href":"../chapters/04-it-backend.html#27-hikari-datasource-sqlite-url"},{"title":"28. Spring SQL Init","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"28-spring-sql-init","href":"../chapters/04-it-backend.html#28-spring-sql-init"},{"title":"29. Spring Actuator","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"29-spring-actuator","href":"../chapters/04-it-backend.html#29-spring-actuator"},{"title":"中文延伸閱讀","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"中文延伸閱讀","href":"../chapters/04-it-backend.html#中文延伸閱讀"},{"title":"30. Spring Modulith","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"30-spring-modulith","href":"../chapters/04-it-backend.html#30-spring-modulith"},{"title":"中文延伸閱讀","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"中文延伸閱讀","href":"../chapters/04-it-backend.html#中文延伸閱讀"},{"title":"31. JUnit / Spring Boot Test / AssertJ","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"31-junit-spring-boot-test-assertj","href":"../chapters/04-it-backend.html#31-junit-spring-boot-test-assertj"},{"title":"`@Test`","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"test","href":"../chapters/04-it-backend.html#test"},{"title":"Spring Integration Test","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"spring-integration-test","href":"../chapters/04-it-backend.html#spring-integration-test"},{"title":"Injection in Test","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"injection-in-test","href":"../chapters/04-it-backend.html#injection-in-test"},{"title":"AssertJ","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"assertj","href":"../chapters/04-it-backend.html#assertj"},{"title":"32. Maven POM / XML","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"32-maven-pom-xml","href":"../chapters/04-it-backend.html#32-maven-pom-xml"},{"title":"32.1 XML 基礎","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"32-1-xml-基礎","href":"../chapters/04-it-backend.html#32-1-xml-基礎"},{"title":"32.2 Parent","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"32-2-parent","href":"../chapters/04-it-backend.html#32-2-parent"},{"title":"32.3 Properties","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"32-3-properties","href":"../chapters/04-it-backend.html#32-3-properties"},{"title":"32.4 Modules","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"32-4-modules","href":"../chapters/04-it-backend.html#32-4-modules"},{"title":"32.5 Dependency","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"32-5-dependency","href":"../chapters/04-it-backend.html#32-5-dependency"},{"title":"32.6 Plugin / Execution","level":"h2","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"32-6-plugin-execution","href":"../chapters/04-it-backend.html#32-6-plugin-execution"},{"title":"Maven Lifecycle","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"maven-lifecycle","href":"../chapters/04-it-backend.html#maven-lifecycle"},{"title":"中文延伸閱讀","level":"h3","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"中文延伸閱讀","href":"../chapters/04-it-backend.html#中文延伸閱讀"},{"title":"33. Executable JAR","level":"h1","slug":"04-it-backend","pageTitle":"IT 共用 Backend：Java 與 Spring Boot","anchor":"33-executable-jar","href":"../chapters/04-it-backend.html#33-executable-jar"},{"title":"IT Vue 路線","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"it-vue-路線","href":"../chapters/05-vue-path.html#it-vue-路線"},{"title":"34. Vue 路線先學什麼、不學什麼","level":"h2","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"34-vue-路線先學什麼-不學什麼","href":"../chapters/05-vue-path.html#34-vue-路線先學什麼-不學什麼"},{"title":"35. Vue Single File Component（SFC）","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"35-vue-single-file-component-sfc","href":"../chapters/05-vue-path.html#35-vue-single-file-component-sfc"},{"title":"`<script setup lang=\"ts\">`","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"section-4","href":"../chapters/05-vue-path.html#section-4"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"36. Vue `ref()`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"36-vue-ref","href":"../chapters/05-vue-path.html#36-vue-ref"},{"title":"使用時機","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"使用時機","href":"../chapters/05-vue-path.html#使用時機"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"37. Vue `reactive()`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"37-vue-reactive","href":"../chapters/05-vue-path.html#37-vue-reactive"},{"title":"38. Vue `computed()`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"38-vue-computed","href":"../chapters/05-vue-path.html#38-vue-computed"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"39. Vue `watch()`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"39-vue-watch","href":"../chapters/05-vue-path.html#39-vue-watch"},{"title":"不要濫用 watch","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"不要濫用-watch","href":"../chapters/05-vue-path.html#不要濫用-watch"},{"title":"40. Vue Lifecycle：`onMounted()` / `onBeforeUnmount()`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"40-vue-lifecycle-onmounted-onbeforeunmount","href":"../chapters/05-vue-path.html#40-vue-lifecycle-onmounted-onbeforeunmount"},{"title":"41. Vue Props：`defineProps`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"41-vue-props-defineprops","href":"../chapters/05-vue-path.html#41-vue-props-defineprops"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"42. Vue Events：`defineEmits`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"42-vue-events-defineemits","href":"../chapters/05-vue-path.html#42-vue-events-defineemits"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"43. Vue Template Interpolation `{{ }}`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"43-vue-template-interpolation","href":"../chapters/05-vue-path.html#43-vue-template-interpolation"},{"title":"44. `v-bind` / `:`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"44-v-bind","href":"../chapters/05-vue-path.html#44-v-bind"},{"title":"45. `v-on` / `@`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"45-v-on","href":"../chapters/05-vue-path.html#45-v-on"},{"title":"46. `@submit.prevent`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"46-submit-prevent","href":"../chapters/05-vue-path.html#46-submit-prevent"},{"title":"47. `v-model`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"47-v-model","href":"../chapters/05-vue-path.html#47-v-model"},{"title":"48. `v-if` / `v-else`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"48-v-if-v-else","href":"../chapters/05-vue-path.html#48-v-if-v-else"},{"title":"49. `v-for` + `:key`","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"49-v-for-key","href":"../chapters/05-vue-path.html#49-v-for-key"},{"title":"50. Vue Template Ref","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"50-vue-template-ref","href":"../chapters/05-vue-path.html#50-vue-template-ref"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"51. Vue Router","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"51-vue-router","href":"../chapters/05-vue-path.html#51-vue-router"},{"title":"`createWebHashHistory()`","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"createwebhashhistory","href":"../chapters/05-vue-path.html#createwebhashhistory"},{"title":"`RouterLink`","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"routerlink","href":"../chapters/05-vue-path.html#routerlink"},{"title":"`RouterView`","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"routerview","href":"../chapters/05-vue-path.html#routerview"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"52. Vue API Client","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"52-vue-api-client","href":"../chapters/05-vue-path.html#52-vue-api-client"},{"title":"53. Vue Master / Detail State Flow","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"53-vue-master-detail-state-flow","href":"../chapters/05-vue-path.html#53-vue-master-detail-state-flow"},{"title":"54. Vue Dashboard Drill-down","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"54-vue-dashboard-drill-down","href":"../chapters/05-vue-path.html#54-vue-dashboard-drill-down"},{"title":"55. Vite","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"55-vite","href":"../chapters/05-vue-path.html#55-vite"},{"title":"Vite 在這個專案的兩個職責","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"vite-在這個專案的兩個職責","href":"../chapters/05-vue-path.html#vite-在這個專案的兩個職責"},{"title":"`import.meta.env`","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"import-meta-env","href":"../chapters/05-vue-path.html#import-meta-env"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"56. Vue ESLint","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"56-vue-eslint","href":"../chapters/05-vue-path.html#56-vue-eslint"},{"title":"57. Vue Playwright E2E","level":"h1","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"57-vue-playwright-e2e","href":"../chapters/05-vue-path.html#57-vue-playwright-e2e"},{"title":"中文延伸閱讀","level":"h3","slug":"05-vue-path","pageTitle":"IT Vue 路線","anchor":"中文延伸閱讀","href":"../chapters/05-vue-path.html#中文延伸閱讀"},{"title":"IT React 路線","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"it-react-路線","href":"../chapters/06-react-path.html#it-react-路線"},{"title":"58. React 路線先學什麼、不學什麼","level":"h2","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"58-react-路線先學什麼-不學什麼","href":"../chapters/06-react-path.html#58-react-路線先學什麼-不學什麼"},{"title":"59. JSX / TSX","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"59-jsx-tsx","href":"../chapters/06-react-path.html#59-jsx-tsx"},{"title":"JSX 不是 HTML String","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"jsx-不是-html-string","href":"../chapters/06-react-path.html#jsx-不是-html-string"},{"title":"`className`","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"classname","href":"../chapters/06-react-path.html#classname"},{"title":"60. React `createRoot()` / `StrictMode`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"60-react-createroot-strictmode","href":"../chapters/06-react-path.html#60-react-createroot-strictmode"},{"title":"61. React Functional Component","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"61-react-functional-component","href":"../chapters/06-react-path.html#61-react-functional-component"},{"title":"62. React Props Interface","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"62-react-props-interface","href":"../chapters/06-react-path.html#62-react-props-interface"},{"title":"63. `PropsWithChildren`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"63-propswithchildren","href":"../chapters/06-react-path.html#63-propswithchildren"},{"title":"64. `useState()`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"64-usestate","href":"../chapters/06-react-path.html#64-usestate"},{"title":"中文延伸閱讀","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"中文延伸閱讀","href":"../chapters/06-react-path.html#中文延伸閱讀"},{"title":"65. Controlled Form","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"65-controlled-form","href":"../chapters/06-react-path.html#65-controlled-form"},{"title":"66. `FormEvent` / `preventDefault()`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"66-formevent-preventdefault","href":"../chapters/06-react-path.html#66-formevent-preventdefault"},{"title":"67. Conditional Rendering","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"67-conditional-rendering","href":"../chapters/06-react-path.html#67-conditional-rendering"},{"title":"`if`","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"if","href":"../chapters/06-react-path.html#if"},{"title":"Ternary","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"ternary","href":"../chapters/06-react-path.html#ternary"},{"title":"`&&`","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"section-17","href":"../chapters/06-react-path.html#section-17"},{"title":"中文延伸閱讀","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"中文延伸閱讀","href":"../chapters/06-react-path.html#中文延伸閱讀"},{"title":"68. List Rendering `.map()` + `key`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"68-list-rendering-map-key","href":"../chapters/06-react-path.html#68-list-rendering-map-key"},{"title":"69. `useEffect()`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"69-useeffect","href":"../chapters/06-react-path.html#69-useeffect"},{"title":"Dependency Array","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"dependency-array","href":"../chapters/06-react-path.html#dependency-array"},{"title":"Cleanup","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"cleanup","href":"../chapters/06-react-path.html#cleanup"},{"title":"不要拿 `useEffect + fetch` 當預設 Server State 解法","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"不要拿-useeffect-fetch-當預設-server-state-解法","href":"../chapters/06-react-path.html#不要拿-useeffect-fetch-當預設-server-state-解法"},{"title":"中文延伸閱讀","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"中文延伸閱讀","href":"../chapters/06-react-path.html#中文延伸閱讀"},{"title":"70. `useRef()`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"70-useref","href":"../chapters/06-react-path.html#70-useref"},{"title":"71. `useMemo()`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"71-usememo","href":"../chapters/06-react-path.html#71-usememo"},{"title":"72. Inline Expression / Style Object","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"72-inline-expression-style-object","href":"../chapters/06-react-path.html#72-inline-expression-style-object"},{"title":"73. Optional Callback","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"73-optional-callback","href":"../chapters/06-react-path.html#73-optional-callback"},{"title":"74. React Router","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"74-react-router","href":"../chapters/06-react-path.html#74-react-router"},{"title":"中文延伸閱讀","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"中文延伸閱讀","href":"../chapters/06-react-path.html#中文延伸閱讀"},{"title":"75. TanStack Query：為什麼 React 版多這一層","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"75-tanstack-query-為什麼-react-版多這一層","href":"../chapters/06-react-path.html#75-tanstack-query-為什麼-react-版多這一層"},{"title":"76. `QueryClient` / `QueryClientProvider`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"76-queryclient-queryclientprovider","href":"../chapters/06-react-path.html#76-queryclient-queryclientprovider"},{"title":"Numeric Separator","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"numeric-separator","href":"../chapters/06-react-path.html#numeric-separator"},{"title":"77. Query Key","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"77-query-key","href":"../chapters/06-react-path.html#77-query-key"},{"title":"78. `useQuery()`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"78-usequery","href":"../chapters/06-react-path.html#78-usequery"},{"title":"中文延伸閱讀","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"中文延伸閱讀","href":"../chapters/06-react-path.html#中文延伸閱讀"},{"title":"79. `useMutation()`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"79-usemutation","href":"../chapters/06-react-path.html#79-usemutation"},{"title":"中文延伸閱讀","level":"h3","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"中文延伸閱讀","href":"../chapters/06-react-path.html#中文延伸閱讀"},{"title":"80. `useQueryClient()` / `invalidateQueries()`","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"80-usequeryclient-invalidatequeries","href":"../chapters/06-react-path.html#80-usequeryclient-invalidatequeries"},{"title":"81. React Master / Detail State Flow","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"81-react-master-detail-state-flow","href":"../chapters/06-react-path.html#81-react-master-detail-state-flow"},{"title":"82. React ECharts Wrapper","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"82-react-echarts-wrapper","href":"../chapters/06-react-path.html#82-react-echarts-wrapper"},{"title":"83. React Vite / ESLint / Playwright","level":"h1","slug":"06-react-path","pageTitle":"IT React 路線","anchor":"83-react-vite-eslint-playwright","href":"../chapters/06-react-path.html#83-react-vite-eslint-playwright"},{"title":"Citizen Python 路線","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"citizen-python-路線","href":"../chapters/07-citizen-python-path.html#citizen-python-路線"},{"title":"84. Citizen 路線先學什麼、不學什麼","level":"h2","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"84-citizen-路線先學什麼-不學什麼","href":"../chapters/07-citizen-python-path.html#84-citizen-路線先學什麼-不學什麼"},{"title":"85. Python Module / Import","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"85-python-module-import","href":"../chapters/07-citizen-python-path.html#85-python-module-import"},{"title":"中文延伸閱讀","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"中文延伸閱讀","href":"../chapters/07-citizen-python-path.html#中文延伸閱讀"},{"title":"86. Variable / Constant Convention","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"86-variable-constant-convention","href":"../chapters/07-citizen-python-path.html#86-variable-constant-convention"},{"title":"87. Function","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"87-function","href":"../chapters/07-citizen-python-path.html#87-function"},{"title":"88. Type Hints","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"88-type-hints","href":"../chapters/07-citizen-python-path.html#88-type-hints"},{"title":"Union","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"union","href":"../chapters/07-citizen-python-path.html#union"},{"title":"Generic collection","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"generic-collection","href":"../chapters/07-citizen-python-path.html#generic-collection"},{"title":"`Literal`","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"literal","href":"../chapters/07-citizen-python-path.html#literal"},{"title":"89. Class","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"89-class","href":"../chapters/07-citizen-python-path.html#89-class"},{"title":"`self`","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"self","href":"../chapters/07-citizen-python-path.html#self"},{"title":"Constructor","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"constructor","href":"../chapters/07-citizen-python-path.html#constructor"},{"title":"90. Inheritance","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"90-inheritance","href":"../chapters/07-citizen-python-path.html#90-inheritance"},{"title":"91. Dataclass","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"91-dataclass","href":"../chapters/07-citizen-python-path.html#91-dataclass"},{"title":"92. Decorator","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"92-decorator","href":"../chapters/07-citizen-python-path.html#92-decorator"},{"title":"93. `if` / `else`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"93-if-else","href":"../chapters/07-citizen-python-path.html#93-if-else"},{"title":"94. List Comprehension","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"94-list-comprehension","href":"../chapters/07-citizen-python-path.html#94-list-comprehension"},{"title":"95. Context Manager：`with`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"95-context-manager-with","href":"../chapters/07-citizen-python-path.html#95-context-manager-with"},{"title":"96. Generator / `yield`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"96-generator-yield","href":"../chapters/07-citizen-python-path.html#96-generator-yield"},{"title":"97. `try / except / finally / raise`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"97-try-except-finally-raise","href":"../chapters/07-citizen-python-path.html#97-try-except-finally-raise"},{"title":"98. `assert`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"98-assert","href":"../chapters/07-citizen-python-path.html#98-assert"},{"title":"99. F-string","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"99-f-string","href":"../chapters/07-citizen-python-path.html#99-f-string"},{"title":"100. Dictionary / Keyword Arguments / `**`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"100-dictionary-keyword-arguments","href":"../chapters/07-citizen-python-path.html#100-dictionary-keyword-arguments"},{"title":"101. `Path` / Path Operator `/`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"101-path-path-operator","href":"../chapters/07-citizen-python-path.html#101-path-path-operator"},{"title":"102. Environment Variable","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"102-environment-variable","href":"../chapters/07-citizen-python-path.html#102-environment-variable"},{"title":"103. Decimal","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"103-decimal","href":"../chapters/07-citizen-python-path.html#103-decimal"},{"title":"104. Date","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"104-date","href":"../chapters/07-citizen-python-path.html#104-date"},{"title":"105. Pydantic `BaseModel`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"105-pydantic-basemodel","href":"../chapters/07-citizen-python-path.html#105-pydantic-basemodel"},{"title":"`Field()`","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"field","href":"../chapters/07-citizen-python-path.html#field"},{"title":"`Literal`","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"literal","href":"../chapters/07-citizen-python-path.html#literal"},{"title":"中文延伸閱讀","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"中文延伸閱讀","href":"../chapters/07-citizen-python-path.html#中文延伸閱讀"},{"title":"106. FastAPI Application","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"106-fastapi-application","href":"../chapters/07-citizen-python-path.html#106-fastapi-application"},{"title":"`async def`","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"async-def","href":"../chapters/07-citizen-python-path.html#async-def"},{"title":"107. FastAPI Lifespan","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"107-fastapi-lifespan","href":"../chapters/07-citizen-python-path.html#107-fastapi-lifespan"},{"title":"108. `APIRouter`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"108-apirouter","href":"../chapters/07-citizen-python-path.html#108-apirouter"},{"title":"109. FastAPI Route Decorators","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"109-fastapi-route-decorators","href":"../chapters/07-citizen-python-path.html#109-fastapi-route-decorators"},{"title":"110. FastAPI Path Parameter","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"110-fastapi-path-parameter","href":"../chapters/07-citizen-python-path.html#110-fastapi-path-parameter"},{"title":"111. Request Body + Pydantic","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"111-request-body-pydantic","href":"../chapters/07-citizen-python-path.html#111-request-body-pydantic"},{"title":"中文延伸閱讀","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"中文延伸閱讀","href":"../chapters/07-citizen-python-path.html#中文延伸閱讀"},{"title":"112. `Request` / HTML Response / Template","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"112-request-html-response-template","href":"../chapters/07-citizen-python-path.html#112-request-html-response-template"},{"title":"中文延伸閱讀","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"中文延伸閱讀","href":"../chapters/07-citizen-python-path.html#中文延伸閱讀"},{"title":"113. Static Files","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"113-static-files","href":"../chapters/07-citizen-python-path.html#113-static-files"},{"title":"中文延伸閱讀","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"中文延伸閱讀","href":"../chapters/07-citizen-python-path.html#中文延伸閱讀"},{"title":"114. Redirect / JSON Response","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"114-redirect-json-response","href":"../chapters/07-citizen-python-path.html#114-redirect-json-response"},{"title":"115. FastAPI Exception Handler","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"115-fastapi-exception-handler","href":"../chapters/07-citizen-python-path.html#115-fastapi-exception-handler"},{"title":"116. Jinja2 Variable：`{{ }}`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"116-jinja2-variable","href":"../chapters/07-citizen-python-path.html#116-jinja2-variable"},{"title":"117. Jinja2 Template Inheritance","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"117-jinja2-template-inheritance","href":"../chapters/07-citizen-python-path.html#117-jinja2-template-inheritance"},{"title":"中文延伸閱讀","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"中文延伸閱讀","href":"../chapters/07-citizen-python-path.html#中文延伸閱讀"},{"title":"118. Citizen HTML + JavaScript 邊界","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"118-citizen-html-javascript-邊界","href":"../chapters/07-citizen-python-path.html#118-citizen-html-javascript-邊界"},{"title":"119. Vanilla JS `fetch()` Wrapper","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"119-vanilla-js-fetch-wrapper","href":"../chapters/07-citizen-python-path.html#119-vanilla-js-fetch-wrapper"},{"title":"120. Vanilla JS DOM 更新","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"120-vanilla-js-dom-更新","href":"../chapters/07-citizen-python-path.html#120-vanilla-js-dom-更新"},{"title":"121. Event Listener","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"121-event-listener","href":"../chapters/07-citizen-python-path.html#121-event-listener"},{"title":"122. Event Delegation / `dataset`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"122-event-delegation-dataset","href":"../chapters/07-citizen-python-path.html#122-event-delegation-dataset"},{"title":"123. Vanilla JS Master / Detail State","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"123-vanilla-js-master-detail-state","href":"../chapters/07-citizen-python-path.html#123-vanilla-js-master-detail-state"},{"title":"124. Python `sqlite3`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"124-python-sqlite3","href":"../chapters/07-citizen-python-path.html#124-python-sqlite3"},{"title":"中文延伸閱讀","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"中文延伸閱讀","href":"../chapters/07-citizen-python-path.html#中文延伸閱讀"},{"title":"125. pytest","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"125-pytest","href":"../chapters/07-citizen-python-path.html#125-pytest"},{"title":"126. FastAPI `TestClient`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"126-fastapi-testclient","href":"../chapters/07-citizen-python-path.html#126-fastapi-testclient"},{"title":"127. Python Playwright","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"127-python-playwright","href":"../chapters/07-citizen-python-path.html#127-python-playwright"},{"title":"128. `pyproject.toml`","level":"h1","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"128-pyproject-toml","href":"../chapters/07-citizen-python-path.html#128-pyproject-toml"},{"title":"Tool 分工","level":"h3","slug":"07-citizen-python-path","pageTitle":"Citizen Python 路線","anchor":"tool-分工","href":"../chapters/07-citizen-python-path.html#tool-分工"},{"title":"Scripts 與 Build Tooling","level":"h1","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"scripts-與-build-tooling","href":"../chapters/08-scripts-and-build.html#scripts-與-build-tooling"},{"title":"129. PowerShell 語法","level":"h2","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"129-powershell-語法","href":"../chapters/08-scripts-and-build.html#129-powershell-語法"},{"title":"Error policy","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"error-policy","href":"../chapters/08-scripts-and-build.html#error-policy"},{"title":"Variable","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"variable","href":"../chapters/08-scripts-and-build.html#variable"},{"title":"`$PSScriptRoot`","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"psscriptroot","href":"../chapters/08-scripts-and-build.html#psscriptroot"},{"title":"Path","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"path","href":"../chapters/08-scripts-and-build.html#path"},{"title":"`if`","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"if","href":"../chapters/08-scripts-and-build.html#if"},{"title":"Create Directory","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"create-directory","href":"../chapters/08-scripts-and-build.html#create-directory"},{"title":"Location stack","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"location-stack","href":"../chapters/08-scripts-and-build.html#location-stack"},{"title":"Execute external command","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"execute-external-command","href":"../chapters/08-scripts-and-build.html#execute-external-command"},{"title":"中文延伸閱讀","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"中文延伸閱讀","href":"../chapters/08-scripts-and-build.html#中文延伸閱讀"},{"title":"130. POSIX Shell 語法","level":"h1","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"130-posix-shell-語法","href":"../chapters/08-scripts-and-build.html#130-posix-shell-語法"},{"title":"Variable","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"variable","href":"../chapters/08-scripts-and-build.html#variable"},{"title":"Command substitution","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"command-substitution","href":"../chapters/08-scripts-and-build.html#command-substitution"},{"title":"File test","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"file-test","href":"../chapters/08-scripts-and-build.html#file-test"},{"title":"Directory","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"directory","href":"../chapters/08-scripts-and-build.html#directory"},{"title":"`exec`","level":"h3","slug":"08-scripts-and-build","pageTitle":"Scripts 與 Build Tooling","anchor":"exec","href":"../chapters/08-scripts-and-build.html#exec"},{"title":"設定檔語法","level":"h1","slug":"09-configuration","pageTitle":"設定檔語法","anchor":"設定檔語法","href":"../chapters/09-configuration.html#設定檔語法"},{"title":"131. `package.json`","level":"h2","slug":"09-configuration","pageTitle":"設定檔語法","anchor":"131-package-json","href":"../chapters/09-configuration.html#131-package-json"},{"title":"`type: module`","level":"h3","slug":"09-configuration","pageTitle":"設定檔語法","anchor":"type-module","href":"../chapters/09-configuration.html#type-module"},{"title":"scripts","level":"h3","slug":"09-configuration","pageTitle":"設定檔語法","anchor":"scripts","href":"../chapters/09-configuration.html#scripts"},{"title":"132. `tsconfig.json`","level":"h1","slug":"09-configuration","pageTitle":"設定檔語法","anchor":"132-tsconfig-json","href":"../chapters/09-configuration.html#132-tsconfig-json"},{"title":"133. `.editorconfig`","level":"h1","slug":"09-configuration","pageTitle":"設定檔語法","anchor":"133-editorconfig","href":"../chapters/09-configuration.html#133-editorconfig"},{"title":"134. `.gitignore`","level":"h1","slug":"09-configuration","pageTitle":"設定檔語法","anchor":"134-gitignore","href":"../chapters/09-configuration.html#134-gitignore"},{"title":"同一功能的三種寫法比較","level":"h1","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"同一功能的三種寫法比較","href":"../chapters/10-feature-comparison.html#同一功能的三種寫法比較"},{"title":"135. 「顯示 Product Name」","level":"h2","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"135-顯示-product-name","href":"../chapters/10-feature-comparison.html#135-顯示-product-name"},{"title":"Vue","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"vue","href":"../chapters/10-feature-comparison.html#vue"},{"title":"React","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"react","href":"../chapters/10-feature-comparison.html#react"},{"title":"Citizen Jinja + JS","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"citizen-jinja-js","href":"../chapters/10-feature-comparison.html#citizen-jinja-js"},{"title":"要學的不是誰最短","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"要學的不是誰最短","href":"../chapters/10-feature-comparison.html#要學的不是誰最短"},{"title":"136. 「切換 Product 後刷新 Trading」","level":"h2","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"136-切換-product-後刷新-trading","href":"../chapters/10-feature-comparison.html#136-切換-product-後刷新-trading"},{"title":"Vue","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"vue","href":"../chapters/10-feature-comparison.html#vue"},{"title":"React","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"react","href":"../chapters/10-feature-comparison.html#react"},{"title":"Citizen","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"citizen","href":"../chapters/10-feature-comparison.html#citizen"},{"title":"137. 「Dashboard 點 Bar → Drill-down」","level":"h2","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"137-dashboard-點-bar-drill-down","href":"../chapters/10-feature-comparison.html#137-dashboard-點-bar-drill-down"},{"title":"Vue","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"vue","href":"../chapters/10-feature-comparison.html#vue"},{"title":"React","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"react","href":"../chapters/10-feature-comparison.html#react"},{"title":"Citizen","level":"h3","slug":"10-feature-comparison","pageTitle":"同一功能的三種寫法比較","anchor":"citizen","href":"../chapters/10-feature-comparison.html#citizen"},{"title":"Syntax Index","level":"h1","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"syntax-index","href":"../chapters/11-syntax-index.html#syntax-index"},{"title":"138. Java Syntax Index","level":"h2","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"138-java-syntax-index","href":"../chapters/11-syntax-index.html#138-java-syntax-index"},{"title":"139. Spring Annotation Index","level":"h2","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"139-spring-annotation-index","href":"../chapters/11-syntax-index.html#139-spring-annotation-index"},{"title":"140. Vue Syntax Index","level":"h2","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"140-vue-syntax-index","href":"../chapters/11-syntax-index.html#140-vue-syntax-index"},{"title":"141. React Syntax Index","level":"h2","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"141-react-syntax-index","href":"../chapters/11-syntax-index.html#141-react-syntax-index"},{"title":"142. TypeScript / JavaScript Syntax Index","level":"h2","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"142-typescript-javascript-syntax-index","href":"../chapters/11-syntax-index.html#142-typescript-javascript-syntax-index"},{"title":"143. Python Syntax Index","level":"h2","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"143-python-syntax-index","href":"../chapters/11-syntax-index.html#143-python-syntax-index"},{"title":"144. FastAPI / Pydantic / Jinja Index","level":"h2","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"144-fastapi-pydantic-jinja-index","href":"../chapters/11-syntax-index.html#144-fastapi-pydantic-jinja-index"},{"title":"145. SQL Syntax Index","level":"h2","slug":"11-syntax-index","pageTitle":"Syntax Index","anchor":"145-sql-syntax-index","href":"../chapters/11-syntax-index.html#145-sql-syntax-index"},{"title":"建議學習路徑","level":"h1","slug":"12-learning-paths","pageTitle":"建議學習路徑","anchor":"建議學習路徑","href":"../chapters/12-learning-paths.html#建議學習路徑"},{"title":"146. 如果學員原本只會 JSP","level":"h2","slug":"12-learning-paths","pageTitle":"建議學習路徑","anchor":"146-如果學員原本只會-jsp","href":"../chapters/12-learning-paths.html#146-如果學員原本只會-jsp"},{"title":"Stage 1 — 共同模型","level":"h3","slug":"12-learning-paths","pageTitle":"建議學習路徑","anchor":"stage-1-共同模型","href":"../chapters/12-learning-paths.html#stage-1-共同模型"},{"title":"Stage 2 — Spring Boot Backend","level":"h3","slug":"12-learning-paths","pageTitle":"建議學習路徑","anchor":"stage-2-spring-boot-backend","href":"../chapters/12-learning-paths.html#stage-2-spring-boot-backend"},{"title":"Stage 3A — Vue 或 Stage 3B — React 二選一","level":"h3","slug":"12-learning-paths","pageTitle":"建議學習路徑","anchor":"stage-3a-vue-或-stage-3b-react-二選一","href":"../chapters/12-learning-paths.html#stage-3a-vue-或-stage-3b-react-二選一"},{"title":"Stage 4 — Dashboard","level":"h3","slug":"12-learning-paths","pageTitle":"建議學習路徑","anchor":"stage-4-dashboard","href":"../chapters/12-learning-paths.html#stage-4-dashboard"},{"title":"Stage 5 — Agent Collaboration","level":"h3","slug":"12-learning-paths","pageTitle":"建議學習路徑","anchor":"stage-5-agent-collaboration","href":"../chapters/12-learning-paths.html#stage-5-agent-collaboration"},{"title":"147. Citizen Developer 學習順序","level":"h2","slug":"12-learning-paths","pageTitle":"建議學習路徑","anchor":"147-citizen-developer-學習順序","href":"../chapters/12-learning-paths.html#147-citizen-developer-學習順序"},{"title":"教學網站運作與維護","level":"h1","slug":"13-site-operations","pageTitle":"教學網站運作與維護","anchor":"教學網站運作與維護","href":"../chapters/13-site-operations.html#教學網站運作與維護"},{"title":"148. 建議 40 個 Lesson","level":"h2","slug":"13-site-operations","pageTitle":"教學網站運作與維護","anchor":"148-建議-40-個-lesson","href":"../chapters/13-site-operations.html#148-建議-40-個-lesson"},{"title":"Foundation","level":"h3","slug":"13-site-operations","pageTitle":"教學網站運作與維護","anchor":"foundation","href":"../chapters/13-site-operations.html#foundation"},{"title":"Spring Boot","level":"h3","slug":"13-site-operations","pageTitle":"教學網站運作與維護","anchor":"spring-boot","href":"../chapters/13-site-operations.html#spring-boot"},{"title":"Vue","level":"h3","slug":"13-site-operations","pageTitle":"教學網站運作與維護","anchor":"vue","href":"../chapters/13-site-operations.html#vue"},{"title":"React","level":"h3","slug":"13-site-operations","pageTitle":"教學網站運作與維護","anchor":"react","href":"../chapters/13-site-operations.html#react"},{"title":"Citizen","level":"h3","slug":"13-site-operations","pageTitle":"教學網站運作與維護","anchor":"citizen","href":"../chapters/13-site-operations.html#citizen"},{"title":"每個範例的實作 Lab","level":"h1","slug":"14-guided-labs","pageTitle":"每個範例的實作 Lab","anchor":"每個範例的實作-lab","href":"../chapters/14-guided-labs.html#每個範例的實作-lab"},{"title":"149. Lab：追 API","level":"h2","slug":"14-guided-labs","pageTitle":"每個範例的實作 Lab","anchor":"149-lab-追-api","href":"../chapters/14-guided-labs.html#149-lab-追-api"},{"title":"150. Lab：改 Business Rule","level":"h2","slug":"14-guided-labs","pageTitle":"每個範例的實作 Lab","anchor":"150-lab-改-business-rule","href":"../chapters/14-guided-labs.html#150-lab-改-business-rule"},{"title":"151. Lab：Optimistic Concurrency","level":"h2","slug":"14-guided-labs","pageTitle":"每個範例的實作 Lab","anchor":"151-lab-optimistic-concurrency","href":"../chapters/14-guided-labs.html#151-lab-optimistic-concurrency"},{"title":"152. Lab：Dashboard Drill-down","level":"h2","slug":"14-guided-labs","pageTitle":"每個範例的實作 Lab","anchor":"152-lab-dashboard-drill-down","href":"../chapters/14-guided-labs.html#152-lab-dashboard-drill-down"},{"title":"Human Review Checklist","level":"h1","slug":"15-human-review","pageTitle":"Human Review Checklist","anchor":"human-review-checklist","href":"../chapters/15-human-review.html#human-review-checklist"},{"title":"153. 不要求 Reviewer 記住所有框架 API","level":"h2","slug":"15-human-review","pageTitle":"Human Review Checklist","anchor":"153-不要求-reviewer-記住所有框架-api","href":"../chapters/15-human-review.html#153-不要求-reviewer-記住所有框架-api"},{"title":"Business","level":"h3","slug":"15-human-review","pageTitle":"Human Review Checklist","anchor":"business","href":"../chapters/15-human-review.html#business"},{"title":"Contract","level":"h3","slug":"15-human-review","pageTitle":"Human Review Checklist","anchor":"contract","href":"../chapters/15-human-review.html#contract"},{"title":"Architecture","level":"h3","slug":"15-human-review","pageTitle":"Human Review Checklist","anchor":"architecture","href":"../chapters/15-human-review.html#architecture"},{"title":"Security","level":"h3","slug":"15-human-review","pageTitle":"Human Review Checklist","anchor":"security","href":"../chapters/15-human-review.html#security"},{"title":"Verification","level":"h3","slug":"15-human-review","pageTitle":"Human Review Checklist","anchor":"verification","href":"../chapters/15-human-review.html#verification"},{"title":"驗證與閱讀檢查","level":"h1","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"驗證與閱讀檢查","href":"../chapters/16-readiness-check.html#驗證與閱讀檢查"},{"title":"Web / JavaScript","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"web-javascript","href":"../chapters/16-readiness-check.html#web-javascript"},{"title":"Bootstrap","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"bootstrap","href":"../chapters/16-readiness-check.html#bootstrap"},{"title":"TypeScript","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"typescript","href":"../chapters/16-readiness-check.html#typescript"},{"title":"Vue","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"vue","href":"../chapters/16-readiness-check.html#vue"},{"title":"React","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"react","href":"../chapters/16-readiness-check.html#react"},{"title":"TanStack Query","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"tanstack-query","href":"../chapters/16-readiness-check.html#tanstack-query"},{"title":"Vite","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"vite","href":"../chapters/16-readiness-check.html#vite"},{"title":"ECharts","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"echarts","href":"../chapters/16-readiness-check.html#echarts"},{"title":"Java","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"java","href":"../chapters/16-readiness-check.html#java"},{"title":"Spring Boot / Spring Framework","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"spring-boot-spring-framework","href":"../chapters/16-readiness-check.html#spring-boot-spring-framework"},{"title":"Maven","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"maven","href":"../chapters/16-readiness-check.html#maven"},{"title":"Python","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"python","href":"../chapters/16-readiness-check.html#python"},{"title":"FastAPI / Pydantic / Jinja2","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"fastapi-pydantic-jinja2","href":"../chapters/16-readiness-check.html#fastapi-pydantic-jinja2"},{"title":"SQLite","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"sqlite","href":"../chapters/16-readiness-check.html#sqlite"},{"title":"Testing","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"testing","href":"../chapters/16-readiness-check.html#testing"},{"title":"PowerShell","level":"h2","slug":"16-readiness-check","pageTitle":"驗證與閱讀檢查","anchor":"powershell","href":"../chapters/16-readiness-check.html#powershell"},{"title":"三個專案的技術責任邊界","level":"h1","slug":"17-responsibility-boundaries","pageTitle":"三個專案的技術責任邊界","anchor":"三個專案的技術責任邊界","href":"../chapters/17-responsibility-boundaries.html#三個專案的技術責任邊界"},{"title":"154. IT Vue / React","level":"h2","slug":"17-responsibility-boundaries","pageTitle":"三個專案的技術責任邊界","anchor":"154-it-vue-react","href":"../chapters/17-responsibility-boundaries.html#154-it-vue-react"},{"title":"155. Citizen","level":"h2","slug":"17-responsibility-boundaries","pageTitle":"三個專案的技術責任邊界","anchor":"155-citizen","href":"../chapters/17-responsibility-boundaries.html#155-citizen"},{"title":"最後應該教會什麼","level":"h1","slug":"18-learning-outcomes","pageTitle":"最後應該教會什麼","anchor":"最後應該教會什麼","href":"../chapters/18-learning-outcomes.html#最後應該教會什麼"},{"title":"156. 對 IT Developer","level":"h2","slug":"18-learning-outcomes","pageTitle":"最後應該教會什麼","anchor":"156-對-it-developer","href":"../chapters/18-learning-outcomes.html#156-對-it-developer"},{"title":"157. 對 Citizen Developer","level":"h2","slug":"18-learning-outcomes","pageTitle":"最後應該教會什麼","anchor":"157-對-citizen-developer","href":"../chapters/18-learning-outcomes.html#157-對-citizen-developer"},{"title":"158. 最終教學主張","level":"h1","slug":"18-learning-outcomes","pageTitle":"最後應該教會什麼","anchor":"158-最終教學主張","href":"../chapters/18-learning-outcomes.html#158-最終教學主張"},{"title":"版本基線","level":"h1","slug":"appendix-a-version-baseline","pageTitle":"版本基線","anchor":"版本基線","href":"../chapters/appendix-a-version-baseline.html#版本基線"},{"title":"159. IT 共用 Backend 版本","level":"h2","slug":"appendix-a-version-baseline","pageTitle":"版本基線","anchor":"159-it-共用-backend-版本","href":"../chapters/appendix-a-version-baseline.html#159-it-共用-backend-版本"},{"title":"160. Vue Frontend 版本","level":"h2","slug":"appendix-a-version-baseline","pageTitle":"版本基線","anchor":"160-vue-frontend-版本","href":"../chapters/appendix-a-version-baseline.html#160-vue-frontend-版本"},{"title":"161. React Frontend 版本","level":"h2","slug":"appendix-a-version-baseline","pageTitle":"版本基線","anchor":"161-react-frontend-版本","href":"../chapters/appendix-a-version-baseline.html#161-react-frontend-版本"},{"title":"162. Citizen Python 版本","level":"h2","slug":"appendix-a-version-baseline","pageTitle":"版本基線","anchor":"162-citizen-python-版本","href":"../chapters/appendix-a-version-baseline.html#162-citizen-python-版本"},{"title":"Web 與 TypeScript API 補充","level":"h1","slug":"appendix-b-web-typescript-api","pageTitle":"Web 與 TypeScript API 補充","anchor":"web-與-typescript-api-補充","href":"../chapters/appendix-b-web-typescript-api.html#web-與-typescript-api-補充"},{"title":"163. `RequestInit`","level":"h2","slug":"appendix-b-web-typescript-api","pageTitle":"Web 與 TypeScript API 補充","anchor":"163-requestinit","href":"../chapters/appendix-b-web-typescript-api.html#163-requestinit"},{"title":"164. `JSON.stringify()`","level":"h2","slug":"appendix-b-web-typescript-api","pageTitle":"Web 與 TypeScript API 補充","anchor":"164-json-stringify","href":"../chapters/appendix-b-web-typescript-api.html#164-json-stringify"},{"title":"165. `URLSearchParams`","level":"h2","slug":"appendix-b-web-typescript-api","pageTitle":"Web 與 TypeScript API 補充","anchor":"165-urlsearchparams","href":"../chapters/appendix-b-web-typescript-api.html#165-urlsearchparams"},{"title":"166. `Object.assign()`","level":"h2","slug":"appendix-b-web-typescript-api","pageTitle":"Web 與 TypeScript API 補充","anchor":"166-object-assign","href":"../chapters/appendix-b-web-typescript-api.html#166-object-assign"},{"title":"167. `ResizeObserver`","level":"h2","slug":"appendix-b-web-typescript-api","pageTitle":"Web 與 TypeScript API 補充","anchor":"167-resizeobserver","href":"../chapters/appendix-b-web-typescript-api.html#167-resizeobserver"},{"title":"168. Citizen JS 的 `Number()` / `toLocaleString()` / `confirm()`","level":"h2","slug":"appendix-b-web-typescript-api","pageTitle":"Web 與 TypeScript API 補充","anchor":"168-citizen-js-的-number-tolocalestring-confirm","href":"../chapters/appendix-b-web-typescript-api.html#168-citizen-js-的-number-tolocalestring-confirm"},{"title":"CSS 語法補充","level":"h1","slug":"appendix-c-css-reference","pageTitle":"CSS 語法補充","anchor":"css-語法補充","href":"../chapters/appendix-c-css-reference.html#css-語法補充"},{"title":"169. CSS Custom Properties","level":"h2","slug":"appendix-c-css-reference","pageTitle":"CSS 語法補充","anchor":"169-css-custom-properties","href":"../chapters/appendix-c-css-reference.html#169-css-custom-properties"},{"title":"170. Selector","level":"h2","slug":"appendix-c-css-reference","pageTitle":"CSS 語法補充","anchor":"170-selector","href":"../chapters/appendix-c-css-reference.html#170-selector"},{"title":"171. Project 中常見 CSS Property","level":"h2","slug":"appendix-c-css-reference","pageTitle":"CSS 語法補充","anchor":"171-project-中常見-css-property","href":"../chapters/appendix-c-css-reference.html#171-project-中常見-css-property"},{"title":"172. Media Query","level":"h2","slug":"appendix-c-css-reference","pageTitle":"CSS 語法補充","anchor":"172-media-query","href":"../chapters/appendix-c-css-reference.html#172-media-query"},{"title":"專案檔案與教學章節對照","level":"h1","slug":"appendix-d-file-mapping","pageTitle":"專案檔案與教學章節對照","anchor":"專案檔案與教學章節對照","href":"../chapters/appendix-d-file-mapping.html#專案檔案與教學章節對照"},{"title":"173. IT Vue","level":"h2","slug":"appendix-d-file-mapping","pageTitle":"專案檔案與教學章節對照","anchor":"173-it-vue","href":"../chapters/appendix-d-file-mapping.html#173-it-vue"},{"title":"174. IT React","level":"h2","slug":"appendix-d-file-mapping","pageTitle":"專案檔案與教學章節對照","anchor":"174-it-react","href":"../chapters/appendix-d-file-mapping.html#174-it-react"},{"title":"175. IT 共用 Backend","level":"h2","slug":"appendix-d-file-mapping","pageTitle":"專案檔案與教學章節對照","anchor":"175-it-共用-backend","href":"../chapters/appendix-d-file-mapping.html#175-it-共用-backend"},{"title":"176. Citizen Python","level":"h2","slug":"appendix-d-file-mapping","pageTitle":"專案檔案與教學章節對照","anchor":"176-citizen-python","href":"../chapters/appendix-d-file-mapping.html#176-citizen-python"},{"title":"目前未使用的技術","level":"h1","slug":"appendix-e-out-of-scope","pageTitle":"目前未使用的技術","anchor":"目前未使用的技術","href":"../chapters/appendix-e-out-of-scope.html#目前未使用的技術"},{"title":"177. IT Backend 沒有使用","level":"h2","slug":"appendix-e-out-of-scope","pageTitle":"目前未使用的技術","anchor":"177-it-backend-沒有使用","href":"../chapters/appendix-e-out-of-scope.html#177-it-backend-沒有使用"},{"title":"178. Vue 沒有使用","level":"h2","slug":"appendix-e-out-of-scope","pageTitle":"目前未使用的技術","anchor":"178-vue-沒有使用","href":"../chapters/appendix-e-out-of-scope.html#178-vue-沒有使用"},{"title":"179. React 沒有使用","level":"h2","slug":"appendix-e-out-of-scope","pageTitle":"目前未使用的技術","anchor":"179-react-沒有使用","href":"../chapters/appendix-e-out-of-scope.html#179-react-沒有使用"},{"title":"180. Citizen 沒有使用","level":"h2","slug":"appendix-e-out-of-scope","pageTitle":"目前未使用的技術","anchor":"180-citizen-沒有使用","href":"../chapters/appendix-e-out-of-scope.html#180-citizen-沒有使用"}];</script><script src="../assets/bootstrap.bundle.min.js"></script><script src="../assets/site.js"></script></body></html>

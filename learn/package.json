@@ -1,0 +1,12 @@
+{
+  "name": "wut1-architecture-academy",
+  "private": true,
+  "scripts": {
+    "migrate:legacy": "node scripts/migrate-legacy.mjs",
+    "build": "node scripts/build.mjs",
+    "verify": "npm run build && node scripts/verify-site.mjs"
+  },
+  "devDependencies": {
+    "markdown-it": "14.1.0"
+  }
+}

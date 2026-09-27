@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: wut1-it-app-template
+
+  datasource:
+    # 非 Local 環境須由部署環境明確指定 SQLite File，不使用教學資料庫預設值。
+    url: ${DB_URL}
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      maximum-pool-size: 1
+      minimum-idle: 1
+      connection-timeout: 10000
+
+  # 非 Local 環境不得自動建立或修改 Database Schema。
+  sql:
+    init:
+      mode: never
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+app:
+  audit:
+    # Sample 尚未接公司 Keycloak。正式系統需改由已驗證 Principal 取得。
+    default-user: ${APP_DEFAULT_USER}
+
+logging:
+  level:
+    root: INFO
+    com.example.wut1sample: INFO

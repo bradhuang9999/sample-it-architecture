@@ -1,0 +1,73 @@
+:root {
+  font-family: Inter, "Noto Sans TC", "Microsoft JhengHei", system-ui, -apple-system, sans-serif;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--bs-tertiary-bg);
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.app-card {
+  border: 0;
+  box-shadow: 0 0.125rem 0.5rem rgb(0 0 0 / 0.06);
+}
+
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.table thead th {
+  white-space: nowrap;
+}
+
+.numeric-cell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.form-readonly-value {
+  min-height: 2.375rem;
+  display: flex;
+  align-items: center;
+}
+
+.chart-container {
+  width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  .app-content {
+    padding: 1.25rem 0.75rem 2rem;
+  }
+}
+
+.app-header {
+  background: var(--bs-body-bg);
+}
+
+.section-title {
+  font-weight: 600;
+}
+
+.app-remark {
+  max-width: 24rem;
+}

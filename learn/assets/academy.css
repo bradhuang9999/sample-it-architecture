@@ -1,0 +1,1563 @@
+/*
+ * academy 共用樣式表。
+ *
+ * 檔案分層（同時就是 cascade 順序，不再靠行序偷取正確性）：
+ *   1. Tokens          :root（--academy-* 與 --bs-* token，唯一的 :root 區塊）
+ *   2. Preferences      html[data-academy-font-size] 字級縮放
+ *                       （色彩主題切換已於 2026-08-26 移除，見該區塊註解）
+ *   3. Base             html / body / a
+ *   4. Bootstrap 重塑    btn / form-control / card / nav-tabs / dropdown / badge /
+ *                        alert / list-group / accordion / modal / breadcrumb
+ *   5. academy 既有 class    academy-banner / academy-card / academy-grid* / academy-table* /
+ *                        academy-form-container / academy-row-focus / academy-required …
+ *   6. academy 新元件        academy-app-shell / academy-sidebar / academy-nav-* / academy-panel /
+ *                        academy-entry-row …（目前僅 app/wfm1/m200 使用，原樣保留）
+ *   7. 第三方修補         ckeditor / choices
+ *   8. Media queries     與特定元件無關的雜項斷點
+ *
+ * 元件自身的 @media（例如 Layer 6 的 980px 側欄斷點）留在該元件旁邊，不搬進 Layer 8，
+ * 避免規則跟它所屬的元件定義隔太遠。
+ *
+ * 背景：2026-08-25 現代化前，「現代感」幾乎全部關在 .academy-modern 這個新 class 後面，
+ * 而全 repo 只有 app/wfm1/m200/wfm1-share-info.html 一頁用到它，其餘 34 個載入本檔的
+ * 頁面完全吃不到。本次的目標是「不新增 class」，把現代化直接做進既有 Bootstrap 元件與
+ * academy 既有 class 裡。詳見 docs/exec-plans/active/2026-08-25-academy-css-modernization-existing-classes.md。
+ */
+
+/* ========================================================================
+ * 1. Tokens
+ * ==================================================================== */
+:root {
+  /* academy 設計 token：間距／圓角／文字／表面色階 */
+  --academy-space-1: 4px;
+  --academy-space-2: 8px;
+  --academy-space-3: 12px;
+  --academy-space-4: 16px;
+  --academy-space-6: 24px;
+  --academy-space-8: 32px;
+  --academy-space-12: 48px;
+  /* 圓角只有三階。控制項用 6px：31px 高的輸入框／按鈕，6px 約佔高度 19%，落在
+     「精密專業」的區間；先前的 8px 是 26%，在這個密度下偏消費級。 */
+  --academy-radius-sm: 6px;
+  --academy-radius-md: 10px;
+  --academy-radius-lg: 12px;
+  --academy-text: #202124;
+  --academy-text-primary: var(--academy-text);
+  --academy-text-secondary: #5f6368;
+  /* 這個 token 修過兩次，兩次都是同一個教訓的不同形式：
+       #8b929b 實測只有 3.14:1，用在 12px 小字上不合格 → 加深為 #6e767f
+       #6e767f 在**白底**是 4.60:1 過關，但只驗了白底——它在本檔自己定義的其他
+       背景上全部不及格：page-bg 4.26、surface-subtle 4.10、surface-hover 4.14。
+       最直接的反例是 .academy-search-button kbd，同一條規則裡就同時設了
+       background: var(--academy-surface-hover) 與 color: var(--academy-text-muted)，
+       11px 字、4.14:1。
+     ⚠ 規則：驗對比度要對**所有可能的背景**驗，不能只驗白底。本檔的背景有八種
+     （surface／page-bg／surface-subtle／surface-hover／accent-soft／accent-subtle／
+     accent-band／bs-secondary-bg），最暗的是 #e9eaec。
+     現值對八種背景全部 >= 4.61:1（白底 5.55:1），留有餘裕而不是卡在 4.5 門檻上。 */
+  --academy-text-muted: #626972;
+  /* 常態背景有三階（不是兩階——app shell 的側欄本來就需要與頁面、內容都區分開）：
+       --academy-page-bg        頁面底
+       --academy-surface        內容表面（卡片、清單、輸入框）
+       --academy-surface-subtle 內凹／次要區塊（側欄、alert 中性底、badge-secondary）
+     狀態色不算結構層：--academy-surface-hover、--academy-surface-selected。
+     唯一的例外是 --bs-secondary-bg（#e9eaec，比 subtle 再深一階），全站只有
+     .academy-mode-switch 的軌道底用它——它需要比 subtle 更深，被選中的那一格才浮得出來。
+     要再加第四階常態背景之前，先確認它不是上面三階其中之一換個名字。 */
+  --academy-page-bg: #f5f6f8;
+  --academy-surface: #ffffff;
+  --academy-surface-subtle: #f0f2f4;
+  --academy-surface-hover: #f1f3f5;
+  --academy-surface-selected: var(--academy-accent-soft);
+  /* 線條只有兩層，不要再多。這是刻意的約束：先前分隔線、卡片外框、輸入框外框各用
+     一組值（1.12 / 1.23 / 1.35:1），同一個畫面上三種線互相打架，看起來像各元件各自
+     有自己的 CSS 歷史。
+       --academy-line   結構分隔線（表格列、清單列、卡片標題下緣）——安靜但要看得見
+       --academy-border 互動元件外框（input、select、卡片外緣）——比分隔線明確一階
+     兩者都帶一點冷色偏移，不是純中性灰，才不會顯得沒有經過挑選。 */
+  --academy-border: #cbd2d8;
+  /* 「線只有兩層」講的是**結構層級**（分隔 vs 元件外框），不是「總共只能有兩個色值」。
+     互動狀態允許從那兩層衍生，但必須是明確列舉的、而不是隨手再挑一個灰。
+     目前全站**只有這一個**衍生值：控制項 hover 時比靜止態明確一階，讓
+     normal → hover → focus 三態有區別（focus 則是走 --academy-accent 的實色 outline）。
+     要再加第三個衍生值之前，先確認它不是「又一個隨手挑的灰」。 */
+  --academy-border-hover: #aeb6bd;
+  /* 與 --academy-text-muted 同因加深（原 #6b7280 只在白底過關，page-bg 4.47、
+     surface-subtle 4.31 皆不及格）。現值對八種背景全部 >= 4.64:1（白底 5.59:1）。
+     ⚠ 技術債：--academy-muted 與 --academy-text-muted 幾乎同色、語意也重疊，本來就該只留一個；
+     而且為了通過 AA 兩者都被迫加深後，與 --academy-text-secondary（白底 6.05:1）的差距
+     已縮到很小，「次要／更次要」的層級在視覺上快分不出來了。合併與重新拉開層級
+     應該一起做，不適合夾在對比度修正裡，另案處理。 */
+  --academy-muted: #626875;
+  --academy-line: #e2e6e9;
+  --academy-font-scale: 1;
+
+  /* 陰影只有三階。先前散落了三個只差 alpha 的「小陰影」（.035 / .05 / .08）與三組
+     「浮層陰影」，肉眼分不出差別，純粹是飄移。三階各自對應一個明確的高度語意： */
+  --academy-shadow-sm: 0 1px 2px rgba(17, 24, 39, .05);    /* 貼在頁面上：卡片、清單、面板 */
+  --academy-shadow-md: 0 12px 28px rgba(17, 24, 39, .14);  /* 浮起一層：dropdown、pop-menu */
+  --academy-shadow-lg: 0 20px 50px rgba(15, 23, 42, .18);  /* 蓋住頁面：modal */
+
+  /* 語意狀態色。刻意與 --academy-accent 分開——強調色代表「可操作」，狀態色代表「這筆資料
+     怎麼了」，兩者混用會讓整個畫面都是藍的，也讓簽核狀態失去辨識度。
+     每一組都是「深色前景 + 極淡底色」配對，alert 與 badge 共用同一組，
+     不再各走各的（先前 alert 是硬編碼、badge 完全沒改仍是 Bootstrap 原色）。 */
+  --academy-success: #1a7f4b;  --academy-success-soft: #eaf7f0;  /* 前景於 soft 底 4.56:1 */
+  /* 原本的 #c9372c 於 soft 底實測是 4.500:1，正好卡在 AA 門檻上，浮點誤差就可能掉下去；
+     加深一階留出餘裕（4.93:1），白底上也從 5.16 提升到 5.66:1。 */
+  --academy-danger: #c03127;   --academy-danger-soft: #fbeceb;   /* 4.93:1 */
+  --academy-warning: #8a5a00;  --academy-warning-soft: #fdf3dd;  /* 5.37:1 */
+  --academy-info: var(--academy-accent-text);
+  --academy-info-soft: var(--academy-accent-subtle);
+
+  /* 傳承藍：取自舊核心系統 RIS 的結構主色 #316ac5（對 ref/ris.png 逐像素取樣，
+     該色佔全圖 8.94%，是它的識別色），往深一階校準以降低飽和、避開 2005 年的觀感。
+     全站只有這一組強調色——先前 focus/連結/nav-active/選取列各用各的藍（#1a73e8
+     Google 藍、#0b67b2、#1d3557、#d7e3f5），四個藍互相打架且沒有任何一個屬於中央再保。
+     每一階都已用 WCAG 公式驗證，數值見註解。 */
+  --academy-accent: #2C5FA8;         /* 白字 6.35:1 － primary 按鈕、焦點外框、頁籤底線 */
+  --academy-accent-hover: #24518F;   /* 白字 7.93:1 */
+  --academy-accent-active: #1E4477;  /* 白字 9.77:1 */
+  --academy-accent-text: #215596;    /* 白底 7.49:1 － 連結、可點圖示 */
+  --academy-accent-soft: #E4EDF8;    /* 選取列底色，內文於其上 13.37:1 */
+  --academy-accent-subtle: #F1F6FB;  /* hover 底色，內文於其上 14.53:1 */
+  /* 清單表頭帶。刻意排在 subtle 與 soft 之間：
+       比 subtle 深 → 在白色 surface 上真的看得出是一條帶（用中性的 --academy-page-bg 時
+                      對白底只有 1.08:1，實際渲染幾乎是隱形的）
+       比 soft 淺  → 不能跟「選取列」同色，否則兩種狀態會混淆（實測過 soft 當表頭，
+                      表頭跟選取列幾乎分不出來）
+     用藍調而不是中性灰有兩個理由：同亮度下人眼靠色相分辨色塊的能力遠好過靠明度；
+     而且舊 RIS 系統的表頭本來就是藍的（#316ac5），這是它的現代化回聲，不是實心藍條。 */
+  --academy-accent-band: #EBF2FA;    /* 表頭底，表頭字 #202124 於其上 14.3:1 */
+  /* 舊名保留：app/wfm1/m200/css/wfm1-share-info.css 有兩處直接引用 --academy-focus，
+     刪掉會讓那兩行變成無效宣告。指向 --academy-accent，不再是獨立的第五個藍。 */
+  --academy-focus: var(--academy-accent);
+
+  /* Bootstrap token 覆寫。這是整份檔案槓桿最高的一段：改 --bs-* token 而不是新增
+     class，就能一次讓所有既有頁面同時換新，不必逐頁改 HTML。
+     所有值都直接寫在這裡當全站唯一預設——先前曾把灰階值放在 [data-bs-theme="gray"]
+     區塊裡，但 35 個載入本檔的頁面只有 2 個 <body> 有掛那個屬性，其餘一律落回
+     Bootstrap 自己的預設（白底、#212529 文字、#0d6efd 藍），等於空轉。
+     色彩主題切換已於 2026-08-26 移除，詳見下方 Layer 2 的說明。 */
+  --bs-input-border: var(--academy-border);
+  /* 這幾個是給「沒有被個別重塑的 Bootstrap 元件與 .rounded-* utility」用的兜底值。
+     有明確層級語意的元件（card = md、modal/dropdown = lg）一律在自己的規則裡直接寫
+     --academy-radius-*，不要透過這層轉一手——先前 .modal-content 吃 --bs-border-radius-lg
+     而 .dropdown-menu 直接吃 --academy-radius-lg，兩個同樣是浮層卻變成 10px vs 12px。 */
+  --bs-border-radius-sm: var(--academy-radius-sm);
+  --bs-border-radius: var(--academy-radius-sm);
+  --bs-border-radius-lg: var(--academy-radius-md);
+  --bs-border-radius-xl: var(--academy-radius-lg);
+  /* Bootstrap 預設 50rem（=800px），而 .badge 自己寫 999px，同樣是膠囊卻兩個值。
+     兩者渲染結果一樣，但收斂掉才不會有人以為它們代表不同東西。 */
+  --bs-border-radius-pill: 999px;
+  --bs-border-color: var(--academy-border);
+  --bs-border-color-translucent: var(--academy-line);
+  /* 字型堆疊要誠實：repo 內沒有 bundle 任何 webfont（唯一的 @font-face 在
+     chinese-list.css，而且是 local() 對應標楷體、只服務申議書列印），公司標準
+     Windows 桌面也不會預裝 Noto Sans TC。先前把它排第一位，實際上中文一律
+     fallback 到微軟正黑體，那行宣告等於沒作用。這裡改成列出真正會被用到的字型。 */
+  --bs-body-font-family: -apple-system, "Segoe UI", Roboto, "Microsoft JhengHei", "微軟正黑體", "PingFang TC", sans-serif;
+  --bs-body-color: #1f2328;
+  --bs-secondary-color: var(--academy-muted);
+  --bs-body-bg: var(--academy-surface);
+  /* --bs-tertiary-bg 與 --academy-surface-subtle 先前是兩個名字、同一個值(#f0f2f4)，
+     等於同一階背景有兩個真相來源。改為指向 token，之後調整只要改一個地方。 */
+  --bs-secondary-bg: #e9eaec;
+  --bs-tertiary-bg: var(--academy-surface-subtle);
+  --bs-link-color: var(--academy-accent-text);
+  --bs-link-hover-color: var(--academy-accent-active);
+  /* 焦點指示改用實色 outline（見 Layer 4 的 .btn:focus-visible）。半透明色環永遠
+     達不到 WCAG 1.4.11 要求的 3:1——實測 rgba(44,95,168,α) 要 α≥0.70 才通過，
+     那時已經幾乎是實色。這裡的 ring 只剩「柔和光暈」的美觀作用，不負責合規。 */
+  --bs-focus-ring-width: 3px;
+  --bs-focus-ring-color: rgba(44, 95, 168, 0.18);
+  --bs-box-shadow-sm: var(--academy-shadow-sm);
+}
+
+/* ========================================================================
+ * 2. Preferences
+ * ==================================================================== */
+
+/* 色彩主題切換（gray／blue／beige）已於 2026-08-26 移除。
+   原因有二：(1) 35 個載入本檔的頁面裡只有 2 個 <body> 有掛 data-bs-theme，其餘一律
+   落回預設值，那三個區塊實際上是空轉的；(2) 維護三套色票會讓每次調色都要改三個地方，
+   在預設色本身都還沒收斂好之前，多主題只是放大問題。
+   灰階主題的值已經是上面 :root 的預設值，所以原本掛 data-bs-theme="gray" 的那兩個
+   頁面外觀完全不變，HTML 也不需要改。日後若真的要做主題切換，應該以 --academy-accent
+   與 --academy-line/--academy-border 這幾個 token 為切換點，不要再複製整組色票。
+
+   字體大小切換與色彩主題無關，保留。 */
+
+/* 字體大小切換（大/中/小）：搭配 html[data-academy-font-size] 由 academy-theme.js 設定。
+   小 = 目前既有的預設呈現（scale 1，不變動），中／大在此基礎上放大。 */
+html[data-academy-font-size="sm"] { --academy-font-scale: 1; }
+html[data-academy-font-size="md"] { --academy-font-scale: 1.125; }
+html[data-academy-font-size="lg"] { --academy-font-scale: 1.25; }
+html {
+  font-size: calc(16px * var(--academy-font-scale));
+}
+
+/* ========================================================================
+ * 3. Base
+ * ==================================================================== */
+body {
+  margin: 0;
+  font-family: var(--bs-body-font-family);
+  background-color: var(--academy-page-bg);
+  color: var(--academy-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========================================================================
+ * 4. Bootstrap 元件重塑
+ *
+ * 只調整 repo 內實際用到的元件外觀（依 grep 統計出現次數排序：form-control 797、
+ * card-header 178、border 168、btn-outline-secondary 160、form-select 141、
+ * card-body 135、alert 101、form-check 100、list-group 65、nav-link 43、
+ * input-group 43、accordion 40、navbar 31、btn-primary 31、modal-* 26、
+ * bg-body-secondary 21、badge 19、breadcrumb 16、pagination 5、nav-tabs 4）。
+ * 拿掉「一眼認出 Bootstrap」的預設特徵——飽和藍色主色、直角、填色標題條、全框線、
+ * 資料夾式頁籤——不動任何 padding／min-height／欄位排列，避免影響既有版面密度。
+ * ==================================================================== */
+
+/* 字級只有三層，全站共用：
+     16px  導覽與標題：nav-link、card-header、modal-title、accordion-button
+           （另有兩級標題：modal-title 20px、academy-banner 24px）
+     14px  內文與表單標籤：card-body、modal-body、accordion-body、list-group-item、
+           alert、dropdown、表格 td，以及 academy-grid-title / academy-table-form th
+     13px  清單表頭與換頁列：academy-table-list th、academy-grid-head、page-*
+   **表單標籤是 14px 不是 13px**：它在值的旁邊、兩者是一對，比它命名的資料還小會讀起來
+   奇怪；清單表頭在資料上方，靠位置＋字重＋表頭底色分層，才可以小一階。詳見 Layer 5。
+   先前「表格／清單／表單家族」已收斂，但其餘元件仍是 Bootstrap 預設的 16px，
+   等於同一份 CSS 裡跑著兩套尺度。這裡把內文層補齊。
+   刻意**不動**導覽與標題那一層——字級本來就該承擔層級，全部壓平反而失去結構。
+   只改 font-size，padding／line-height 一律不動（維持 Compact Enterprise 的密度）。 */
+.card-body,
+.modal-body,
+.accordion-body,
+.list-group-item,
+.alert,
+.dropdown-menu {
+  font-size: .875rem;
+}
+
+/* 焦點指示：全站統一。
+   實色 outline 才過得了 WCAG 1.4.11 的 3:1（--academy-accent 對白底 6.35:1）；
+   box-shadow 那圈只是柔和光暈，純美觀。用 :focus-visible 讓滑鼠點擊不顯示、
+   鍵盤導覽才顯示——但絕不能像先前那樣「直接關掉且沒有替代」。 */
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible,
+.accordion-button:focus-visible,
+.nav-link:focus-visible,
+.dropdown-item:focus-visible,
+.list-group-item-action:focus-visible,
+.page-link:focus-visible {
+  outline: 2px solid var(--academy-accent);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+}
+
+/* 按鈕 */
+.btn {
+  /* 設變數而不是直接設 border-radius：Bootstrap 的 .btn 是讀
+     var(--bs-btn-border-radius)，直接設屬性會把整套變數機制蓋掉，讓
+     .academy-form-container .btn 的圓角覆寫變成永遠讀不到的死碼（實測：變數解析為
+     4px，實際渲染 8px，且同一個 input-group 內的輸入框是 4px，接縫對不上）。 */
+  --bs-btn-border-radius: var(--academy-radius-sm);
+  font-weight: 500;
+}
+.btn-primary {
+  --bs-btn-bg: var(--academy-accent); --bs-btn-border-color: var(--academy-accent);
+  --bs-btn-hover-bg: var(--academy-accent-hover); --bs-btn-hover-border-color: var(--academy-accent-hover);
+  --bs-btn-active-bg: var(--academy-accent-active); --bs-btn-active-border-color: var(--academy-accent-active);
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--academy-accent-text); --bs-btn-border-color: var(--academy-border);
+  --bs-btn-hover-bg: var(--academy-accent); --bs-btn-hover-border-color: var(--academy-accent); --bs-btn-hover-color: #fff;
+}
+.btn-outline-secondary {
+  --bs-btn-color: #414651; --bs-btn-border-color: var(--academy-border);
+  --bs-btn-hover-bg: var(--bs-tertiary-bg); --bs-btn-hover-color: #1f2328; --bs-btn-hover-border-color: var(--academy-border);
+}
+/* .btn-outline-dark 先前完全沒被重塑，吃 Bootstrap 原色 #212529 的硬黑框。
+   全站 155 處、橫跨 10 個模組（user-info 工具列那排 + ⧉ ✕ 💾 ↺ 就是它），
+   是整個介面「太黑」的最大單一來源。
+   這裡只把框線從硬黑換成中性色，**保留邊框**——實測把邊框設成 transparent（純 ghost）
+   之後，user-info 底部的「Expire / Reactive」這類純文字動作鈕會變成看起來只是一段文字，
+   完全失去可按的線索。ghost 適合圖示工具列，不適合會出現文字的通用 class，而
+   btn-outline-dark 兩種用途都有，CSS 無法區分，所以取保守解。 */
+.btn-outline-dark {
+  --bs-btn-color: var(--academy-text-secondary);
+  --bs-btn-border-color: var(--academy-border);
+  --bs-btn-bg: transparent;
+  --bs-btn-hover-bg: var(--bs-tertiary-bg);
+  --bs-btn-hover-border-color: var(--academy-border-hover);
+  --bs-btn-hover-color: var(--academy-text);
+  --bs-btn-active-bg: var(--academy-surface-hover);
+  --bs-btn-active-border-color: var(--academy-border-hover);
+  --bs-btn-active-color: var(--academy-text);
+}
+
+/* 表單控制項 */
+.form-control, .form-select {
+  border-radius: var(--academy-radius-sm);
+  border-color: var(--academy-border);
+}
+.form-control:hover, .form-select:hover {
+  /* normal → hover → focus 三態。先前只有 normal 與 focus，輸入框在滑過時沒有
+     任何回饋，讀起來就是「原生 form control」。 */
+  border-color: var(--academy-border-hover);
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--academy-accent);
+  box-shadow: 0 0 0 3px var(--bs-focus-ring-color);
+}
+
+/* 卡片 */
+.card {
+  border-color: var(--academy-border);
+  border-radius: var(--academy-radius-md);
+  box-shadow: var(--academy-shadow-sm);
+}
+.card-header {
+  background-color: transparent;
+  border-bottom-color: var(--academy-line);
+  font-weight: 600;
+}
+.card-footer {
+  background-color: transparent;
+  border-top-color: var(--academy-line);
+}
+
+/* 頁籤：資料夾式（三邊框＋白底缺口） → 底線式 */
+.nav-tabs { border-bottom-color: var(--academy-line); }
+.nav-tabs .nav-link {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin-right: var(--academy-space-4);
+  color: var(--academy-muted);
+  font-weight: 500;
+}
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+  border-color: transparent;
+  color: var(--academy-text);
+}
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+  background-color: transparent;
+  border-color: transparent transparent var(--academy-accent);
+  color: var(--academy-text);
+  font-weight: 600;
+}
+
+/* 下拉選單 */
+.dropdown-menu {
+  border: 0;
+  border-radius: var(--academy-radius-lg);
+  padding: .35rem;
+  box-shadow: var(--academy-shadow-md);
+}
+.dropdown-item {
+  border-radius: var(--academy-radius-sm);
+  padding: .5rem .6rem;
+  font-size: .875rem;
+}
+.dropdown-item:active { background: var(--bs-tertiary-bg); color: inherit; }
+
+/* 徽章：形狀改 pill，顏色改吃語意色 token（與 alert 同一組）。
+   先前只改了形狀、顏色完全沒動，所以真實模板渲染出來的簽核狀態徽章仍是 Bootstrap
+   原色——包含 bg-info 那個螢光青，在一片中性介面裡特別突兀。
+   覆寫一律 scoped 在 .badge 之下，不動 .bg-info / .text-bg-* 這些全域 utility 的定義，
+   避免波及它們在其他地方的用途。
+
+   Bootstrap 有 bg-* 與 text-bg-* 兩種寫法，本 repo 兩種都在用，而且 bg-* 才是多數
+   （bg-info 10、bg-primary 9、bg-secondary 7、bg-danger/success/warning 各 2；
+   utilUi.js 產生的序號徽章也是 badge bg-primary）。六個變體一律兩種寫法都要覆寫，
+   漏掉任何一個，那個變體就會掉回 Bootstrap 原色。 */
+.badge { font-weight: 500; border-radius: 999px; }
+.badge.text-bg-primary,
+.badge.bg-primary        { background-color: var(--academy-accent-soft) !important; color: var(--academy-accent-active) !important; }
+.badge.text-bg-secondary,
+.badge.bg-secondary      { background-color: var(--bs-tertiary-bg) !important; color: var(--academy-text-secondary) !important; }
+.badge.text-bg-success,
+.badge.bg-success        { background-color: var(--academy-success-soft) !important; color: var(--academy-success) !important; }
+.badge.text-bg-danger,
+.badge.bg-danger         { background-color: var(--academy-danger-soft) !important; color: var(--academy-danger) !important; }
+.badge.text-bg-warning,
+.badge.bg-warning        { background-color: var(--academy-warning-soft) !important; color: var(--academy-warning) !important; }
+.badge.text-bg-info,
+.badge.bg-info           { background-color: var(--academy-info-soft) !important; color: var(--academy-info) !important; }
+
+/* 回饋訊息：高飽和 pastel 色塊＋全框 → 中性 tint＋左緣強調條。
+   色值改吃 Layer 1 的語意色 token，與 .badge 共用同一組。 */
+.alert {
+  border: 0;
+  border-left: 3px solid currentColor;
+  border-radius: var(--bs-border-radius);
+}
+.alert-primary   { color: var(--bs-body-color); background-color: var(--bs-tertiary-bg); }
+.alert-secondary { color: var(--academy-muted); background-color: var(--bs-tertiary-bg); }
+.alert-success   { color: var(--academy-success); background-color: var(--academy-success-soft); }
+.alert-danger    { color: var(--academy-danger); background-color: var(--academy-danger-soft); }
+.alert-warning   { color: var(--academy-warning); background-color: var(--academy-warning-soft); }
+.alert-info      { color: var(--academy-info); background-color: var(--academy-info-soft); }
+
+/* 清單 */
+.list-group-item {
+  border: 0;
+  border-bottom: 1px solid var(--academy-line);
+  background-color: transparent;
+}
+.list-group-item:last-child { border-bottom: 0; }
+.list-group-item.active {
+  background-color: var(--academy-surface-selected);
+  border-color: transparent;
+  color: var(--academy-text);
+}
+.list-group-item-action:hover,
+.list-group-item-action:focus {
+  background-color: var(--bs-tertiary-bg);
+}
+
+/* 手風琴 */
+.accordion-item { border: 0; border-bottom: 1px solid var(--academy-line); }
+.accordion-button { background-color: transparent; box-shadow: none; font-weight: 500; }
+.accordion-button:not(.collapsed) {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--academy-text);
+  box-shadow: none;
+}
+/* 只關掉滑鼠點擊時的藍色光暈；鍵盤焦點由上方統一的 :focus-visible 規則負責。 */
+.accordion-button:focus { box-shadow: none; border-color: transparent; }
+
+/* 對話框 */
+.modal-content {
+  border: 0;
+  border-radius: var(--academy-radius-lg);
+  box-shadow: var(--academy-shadow-lg);
+}
+.modal-header, .modal-footer { border-color: var(--academy-line); }
+
+/* 麵包屑 */
+.breadcrumb { --bs-breadcrumb-divider-color: var(--academy-text-muted); font-size: .8125rem; color: var(--academy-muted); }
+.breadcrumb-item.active { color: var(--academy-text); }
+
+/* ========================================================================
+ * 5. academy 既有 class（本次現代化的核心：不新增 class，直接改既有頁面在用的樣式）
+ * ==================================================================== */
+
+select.form-select {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  min-height: 31px;
+}
+
+.academy-card { margin-bottom: 1rem !important; }
+
+.academy-bg-init { background-color: initial; }
+
+.academy-hide { display: none; }
+
+.academy-no-auth { display: none !important; }
+
+.academy-required {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  position: relative;
+}
+.academy-required::before {
+  /* 改用純 CSS 星號，去除對 img/ico_required.png 的相依，並讓顏色跟著主題色走。 */
+  content: "\2731";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--academy-danger);
+}
+
+.academy-form-container div.row,
+.modal-body .row {
+  align-items: center !important;
+  margin-bottom: 0.25rem;
+}
+
+.academy-form-container .col-form-label {
+  padding-top: calc(0.25rem + var(--bs-border-width));
+  padding-bottom: calc(0.25rem + var(--bs-border-width));
+  font-size: .875rem;
+}
+
+/* .form-select 必須跟 .form-control 一起列。先前只寫了 .form-control，導致每一個 academy
+   表單裡的 <select> 都是 16px、而隔壁的 <input> 是 14px——同一列相鄰的兩個控制項不同
+   大小，是實測出來的既有 bug，不是設計選擇。padding／min-height 不動，只補字級。 */
+.academy-form-container .form-control,
+.academy-form-container .form-select {
+  font-size: .875rem;
+  border-radius: var(--bs-border-radius-sm);
+}
+.academy-form-container .form-control {
+  min-height: calc(1.5em + 0.5rem + calc(var(--bs-border-width) * 2));
+  padding: 0.25rem 0.5rem;
+}
+
+.academy-form-container .btn {
+  --bs-btn-padding-y: 0.25rem;
+  --bs-btn-padding-x: 0.5rem;
+  --bs-btn-font-size: 0.875rem;
+  --bs-btn-border-radius: var(--bs-border-radius-sm);
+}
+
+.academy-cursor-pointer {
+  cursor: pointer;
+}
+
+.academy-btn {
+  margin: 0.25rem 0;
+}
+
+/* fatmenu */
+.pgm-menu.show {
+  width: 100%;
+}
+
+.academy-banner {
+  background-color: transparent;
+  padding: 16px 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--academy-line);
+  text-align: left;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* 共用 Table 樣式。
+   目標是：同一件事的兩種寫法（DIV 版與 TABLE 版）必須長得一樣。
+     資料清單  .academy-grid-list ／ .academy-table-list → 只留水平分隔線
+     表單版面  .academy-grid-form ／ .academy-table-form → 完全不畫格線
+   先前兩者共用「每個儲存格四邊都畫框」的處理，導致 TABLE 版一律像試算表，
+   跟對應的 DIV 版完全對不起來。
+   全 repo 27 個 academy-table 都至少帶 -form 或 -list 其中一個，沒有裸用，依修飾拆分是安全的；
+   但兩者**並非互斥**——有一處同時掛了兩個（見下方 font-size 規則的註解），
+   因此 -form 的規則一律排在 -list 之後，讓「同時掛兩個」時的優先序是明確且一致的。 */
+.academy-table {
+  background-color: var(--academy-surface);
+  color: var(--bs-body-color);
+  border-collapse: collapse;
+  width: 100%;
+}
+.academy-table th,
+.academy-table td {
+  border: 0;
+  border-bottom: 1px solid var(--academy-line);
+}
+/* 線一律由**儲存格**承擔，`<tr>` 一條都不畫。
+   Bootstrap 的 table-bordered 是**兩條**規則，一條給儲存格、一條給列：
+     .table-bordered > :not(caption) > *     { border-width: 1px 0 }  ← <tr>
+     .table-bordered > :not(caption) > * > * { border-width: 0 1px }  ← <th>/<td>
+   上面的 border: 0 只蓋掉了後者。列的那條若不處理，在 border-collapse 底下
+   會贏過儲存格——collapse 的衝突解析在寬度與樣式相同時才輪到「儲存格優先於列」，
+   而 -form 的儲存格是 border-style: none，none 輸給任何實線，於是列的線照畫。
+   實測 -form 掛上 table-bordered 時每列上下各出現一條線，與對照組 .academy-grid-form
+   （列與列之間本來就沒有任何線）對不起來。
+   -list 雖然因為儲存格有實線而剛好贏了衝突解析，但列的線仍會在表格最外緣的上下
+   邊各留一條，而且吃的是 --bs-border-color 而非 --academy-line，兩種來源混在同一張表。
+   把列一律歸零，兩種變體就都只剩下儲存格畫的線，顏色也統一。
+   specificity 與 Bootstrap 那條相同（0,1,1），宣告在後即可勝出。 */
+.academy-table > :not(caption) > * {
+  border-width: 0;
+}
+/* -form 連水平線都不要：對照組 .academy-grid-form 的列與列之間本來就沒有任何線，
+   標籤與值的配對是靠對齊和字色承擔，不是靠格子。 */
+.academy-table-form th,
+.academy-table-form td {
+  border: 0;
+}
+.academy-table.table-hover tbody tr:hover {
+  background-color: var(--academy-surface-hover);
+}
+/* -form 的 th 與 -list 的 th 工作不同，不該共用同一組字色字重：
+     -form th  是「欄位標籤」，右邊就是它的值 → 要退到次要，讓值本身突出
+     -list th  是「欄位標題」，下面是整欄資料 → 要站得住，當作掃視的定錨
+   先前兩者都套 --academy-text-secondary / 500，結果清單表頭比它底下的資料列還淡，
+   層級整個反過來（舊版 academy-ori.css 的表頭是深色的，並排比對時很明顯）。
+   ⚠ 順序：-list 在前、-form 在後（理由見下方 font-size 規則的說明）。曾經寫反過，
+   結果同時掛兩個 class 的那張表 border 與字級吃 -form、字色字重卻吃 -list。 */
+.academy-table-list th {
+  background-color: transparent;
+  color: var(--academy-text);
+  font-weight: 600;
+  align-self: stretch;
+}
+.academy-table-form th {
+  background-color: transparent;
+  color: var(--academy-text-secondary);
+  font-weight: 500;
+  align-self: stretch; /* 延伸至row高度 */
+}
+/* 字級只有兩級，DIV 版與 TABLE 版共用同一組值：
+     標籤／表頭  .8125rem（13px）／weight 500
+     內容／欄位  .875rem（14px）／weight 400
+   實測改前同一個畫面上跑了四種字級：grid-head 表頭 14px、table-list 表頭 12.8px、
+   grid-list 資料 14px、table-list/table-form 資料 16px。
+   兩個根因：(1) <td> 沒有任何規則，直接繼承 body 的 16px，而 DIV 版一律走
+   .academy-form-container 的 .875rem；(2) .academy-grid-head 雖然宣告 .8rem，但實際渲染是
+   14px——裡面的 .col-form-label 有自己的規則（.academy-form-container .col-form-label），
+   specificity 相同且宣告在後，把容器的字級蓋掉了。所以要對齊必須直接指定到 label 上。
+
+   ⚠ -form 與 -list 的宣告順序有意義，不要調換：production 有一處 markup 同時掛了兩個
+   （app/wfm1/m120/hbs/pdoc-external-result.hbs，class 裡還重複了 academy-table，應是複製貼上
+   殘留）。兩者 specificity 相同，同分由後宣告者勝出，所以 -form 必須排在 -list 之後，
+   讓「同時掛兩個」一律以 -form 為準——與上面 border 的解析結果一致。曾經寫反過，導致
+   那個元素 border 吃 -form、font-size 卻吃 -list，同一格出現兩種來源的混合結果。
+   該檔實際是 th/td 交錯的標籤／值版面，-form 才是它的真實意圖。 */
+/* 欄位標題（清單）維持 13px：它在資料的**上方**，靠位置＋字重＋表頭底色就分得出層級。
+   表單標籤（-form）不同：它在值的**旁邊**，是一對。標籤比它所命名的資料還小會讀起來
+   奇怪，也讓填表時最常掃視的東西變成全頁最弱的元素。改成與輸入框同樣的 14px，
+   弱化交給顏色（--academy-text-secondary）單獨承擔，不要「縮小＋減字重＋變灰」疊三層。 */
+.academy-table-list th { font-size: .8125rem; }
+.academy-table-form th { font-size: .875rem; }
+.academy-table-list td,
+.academy-table-form td { font-size: .875rem; }
+/* 直接指定到 label 上才蓋得掉 .academy-form-container .col-form-label 的 .875rem */
+.academy-grid-head .col-form-label { font-size: .8125rem; }
+
+/* 全站使用量第二高的自訂 class（259 處），是每天要掃視的欄位標籤。
+   --academy-muted 實測 4.83:1 只是勉強過 AA，在 13px + 辦公室環境光下偏吃力；
+   改用 --academy-text-secondary（6.05:1），保留「次要」的層級感但補回可讀性。 */
+.academy-grid-title {
+  color: var(--academy-text-secondary);
+  text-align: right;
+  font-weight: 500;
+  /* 與 .academy-table-form th 同值：兩種寫法的表單標籤必須一致（見上方說明） */
+  font-size: .875rem;
+  align-self: stretch; /* 延伸至row高度 */
+
+  /* 上下左右置中 */
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+/* DIV 版表單版面（.academy-table-form 的對照組）。
+   全 repo 9 處使用，但在 2026-08-26 之前 academy.css 對它「一條規則都沒有」——版面完全是
+   .academy-grid-title 加 Bootstrap row/col 撐出來的，跟 .btn-outline-dark 曾經的狀況同類：
+   class 有人用、共用樣式表沒認領。這裡正式認領，只補真正缺的三件事，不改版面尺度。
+
+   1) 列的節奏不再相依於外層有沒有掛 .academy-form-container。原本只有
+      `.academy-form-container div.row` 提供列間距，academy-grid-form 自己沒有，
+      放在沒有那層外殼的頁面就會塌成一團。
+   2) 標籤字重統一。實測 markup 上混用兩種寫法：`form-label me-2 fw-bold` 與
+      `col-form-label`，前者的 fw-bold 是 700 !important，會蓋掉 .academy-grid-title 的 500，
+      導致同一個表單裡標籤有的粗有的不粗、也跟 .academy-table-form th 對不起來。
+      要蓋掉 utility 的 !important 只能同樣用 !important。
+   3) 標籤的 margin-bottom 歸零。Bootstrap 的 .form-label 預設帶 0.5rem，
+      在 row 內會把標籤往上推、跟右邊的欄位對不齊（實測 8px vs 0px）。 */
+.academy-grid-form .row {
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.academy-grid-form .academy-grid-title label,
+.academy-grid-form label.form-label {
+  margin-bottom: 0;
+  font-weight: 500 !important;
+}
+
+/* 共用 Grid 樣式 */
+.academy-grid {
+  background-color: var(--academy-surface);
+  color: var(--bs-body-color);
+  border-radius: var(--academy-radius-md);
+}
+
+.academy-grid-list {
+  box-shadow: var(--academy-shadow-sm);
+  /* Bootstrap 的 .row 帶 margin: 0 -12px（負 gutter），而 col 自己有 12px padding，
+     兩者相抵之後「文字剛好貼在容器邊緣上」（實測文字左緣距容器左緣 0.0px）。
+     容器補上等量的水平 padding 就能把這 12px 讓回來：
+       容器內容區左移 12px → 列的負 margin 把列拉回容器邊界（維持整列填色滿版）
+       → col 的 padding 讓文字落在距邊緣 12px 處
+     欄寬比例不變，只是整列收窄 24px，不影響垂直密度。 */
+  padding-left: 12px;
+  padding-right: 12px;
+  /* 列的負 margin 讓它剛好等於容器邊界；圓角處仍需裁切，否則選取列的底色會把
+     圓角切成直角。已確認全 repo 沒有任何 .academy-grid-list 內含 dropdown /
+     academy-pop-menu，不會發生彈出選單被裁掉的問題。 */
+  overflow: hidden;
+}
+
+/* 分隔線只服務「傳統結構」的清單：.academy-grid-head / .academy-grid-body 兩層包裝 + .row。
+   ⚠ .academy-grid-list 目前有兩種用法，這是**刻意**的，不要把下面的 selector 放寬去涵蓋另一種：
+
+     (a) 傳統清單（m100、user-info…）
+         .academy-grid-list > .academy-grid-head > .row  +  > .academy-grid-body > .row.border
+         → 靠水平分隔線分列，即下面這幾條規則。
+
+     (b) m200 的內容清單（wfm1-share-info-item-list.hbs）
+         .academy-grid-list > .row.academy-grid-head（表頭直接是 row，沒有包裝層）
+                        > .row.academy-entry-row（資料列）
+         → **刻意沒有分隔線**：.academy-entry-row 帶 border: 0 !important + var(--academy-radius-sm)
+           + hover 換底色，是「hover highlight」式的清單，不是「分隔線」式的。
+           兩種列的分隔語言不同，硬要統一反而會破壞 m200 既有的設計。
+
+   責任劃分（兩個 class 通常一起掛在同一個元素上，但職責不同）：
+     .academy-grid       白色 surface（background）與圓角
+     .academy-grid-list  再加上陰影、水平 gutter 補償（padding 12px）與圓角裁切（overflow）
+   **兩者都不決定「列與列之間怎麼分」**——那由裡面的列自己帶的 class 決定，
+   所以同一個容器底下可以是分隔線式，也可以是 hover highlight 式。 */
+.academy-grid-list > .academy-grid-head > .row,
+.academy-grid-list > .academy-grid-body > .row {
+  border-bottom: 1px solid var(--academy-line);
+}
+.academy-grid-list > .academy-grid-body > .row:last-child { border-bottom: 0; }
+
+/* 真實頁面的列固定帶 Bootstrap 的 .border（四邊 !important），上面那條 border-bottom
+   在這個情況下完全不會生效——這是比較檢視器實測驗證過的真實現象，不是理論推測。
+   要讓分隔線真的顯示，必須連 !important 一起蓋過去。 */
+.academy-grid-list .row.border {
+  border: 0 !important;
+  border-bottom: 1px solid var(--academy-line) !important;
+}
+/* 「最後一列不畫線」只適用於資料區。先前寫成 .academy-grid-list .row.border:last-child，
+   而表頭列是 .academy-grid-head 的唯一子元素、也會命中 :last-child，導致表頭下方的分隔線
+   整條消失（實測 border-bottom: 0px none）。這裡限定在 .academy-grid-body 內。 */
+.academy-grid-list > .academy-grid-body > .row.border:last-child { border-bottom: 0 !important; }
+
+/* 同理，.bg-body-secondary 也是 !important；不中和就蓋不掉，表頭仍會是灰底方框。 */
+/* 表頭底色：極淡地往頁面底退一階，給長清單一個水平定錨。
+   這不是走回 Bootstrap 那條灰色標題條——實際比較過四種處理後選的：
+   用 --academy-surface-subtle 已經是一條明確的「帶」，一頁疊好幾個清單就會累積成視覺雜訊；
+   完全不加則在欄位多、列數多時少了掃視的落腳點。
+   （2026-08-26 修正：一度改用中性的 --academy-page-bg，但實際渲染對白底只有 1.08:1，
+   在一般辦公室螢幕上幾乎是隱形的；改用帶藍調的 --academy-accent-band，同亮度下靠色相
+   就分得出來，也呼應舊 RIS 系統的藍色表頭。）
+   .bg-body-secondary 是 Bootstrap 的 !important utility，必須同樣 !important 才蓋得掉。 */
+.academy-grid-head > .row.bg-body-secondary,
+.academy-grid-head > .row {
+  background-color: var(--academy-accent-band) !important;
+}
+
+/* 清單的欄位標題：與 .academy-table-list th 同一組字色字重（兩種寫法要一致）。
+   用 --academy-text + 600 而不是 muted + 500——它是整欄資料的定錨，必須比底下的資料列
+   更站得住，不是更退後。字級維持比資料小一階（13px vs 14px），靠大小而不是靠變淡
+   來區分層級。 */
+.academy-grid-head {
+  background-color: transparent;
+  color: var(--academy-text);
+  font-size: .8rem;
+  font-weight: 600;
+}
+/* TABLE 版的表頭要跟上面 DIV 版同一個底色，否則兩種寫法又會分岔。 */
+.academy-table-list thead tr,
+.academy-table-list > thead > tr > th {
+  background-color: var(--academy-accent-band);
+}
+.academy-grid-head .academy-grid-title {
+  text-align: center;
+  font-weight: 600;
+}
+
+.academy-row-focus {
+  border: 0 !important;
+  background-color: var(--academy-accent-soft) !important;
+  box-shadow: inset 3px 0 0 var(--academy-accent);
+}
+
+/* 共用換頁列（由 util/js/component/utilUiPage.js 產生，m100／user-info／m200 三頁共用）。
+   先前 academy.css 對這幾個 class 一條規則都沒有，所以：可按的箭頭是預設連結色、不可按的
+   箭頭是直接吐一個裸 <span>（繼承 body 的近黑色，看起來跟可按的一樣重）、頁碼是完全
+   原生的 <select>。這裡把三種狀態分開，讓「可按 / 不可按」一眼分得出來。 */
+/* 換頁列整體：字級與字重要一致。
+   先前 .page-total-rows 是 13px 而 .page-select 是 16px（同一列兩種大小），而且兩者都
+   繼承了 .card-header 的 font-weight: 600——換頁列的實際位置是
+   `card-header academy-bg-init page-line`，權重是從標題列滲下來的。換頁控制項不是標題。 */
+.page-change-prev,
+.page-change-next,
+.page-select,
+.page-total-rows {
+  font-size: .8125rem;
+  font-weight: 400;
+}
+.page-change-prev,
+.page-change-next {
+  /* 不可按的狀態是裸 <span>，沒有自己的 class，只能靠容器把它壓成 muted */
+  color: var(--academy-text-muted);
+}
+.page-change-prev a,
+.page-change-next a {
+  color: var(--academy-accent-text);
+  text-decoration: none;
+  padding: 2px 4px;
+  border-radius: var(--academy-radius-sm);
+}
+.page-change-prev a:hover,
+.page-change-next a:hover {
+  color: var(--academy-accent-active);
+  background-color: var(--academy-accent-subtle);
+}
+.page-select select {
+  min-height: 28px;
+  padding: 2px 4px;
+  border: 1px solid var(--academy-border);
+  border-radius: var(--academy-radius-sm);
+  background-color: var(--academy-surface);
+  color: var(--bs-body-color);
+  font-size: .8125rem;
+}
+.page-total-rows {
+  color: var(--academy-text-secondary);
+  font-size: .8125rem;
+}
+
+/* Grid 中所有 col-* 欄位統一邊框處理（保留供未來評估，目前未啟用） */
+/*
+.academy-grid .row {
+  display: flex;
+  flex-wrap: nowrap;
+  border-collapse: collapse;
+}
+.academy-grid .col,
+.academy-grid [class^="col-"] {
+  border: 1px solid var(--bs-border-color-translucent);
+  box-sizing: border-box;
+}
+*/
+
+/* 設定input不顯示歷史紀錄 */
+input[autocomplete="off"] {
+}
+
+#userName {
+  padding: 0;
+  margin-top: .5rem;
+  margin-bottom: 0;
+}
+
+#userId {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+/* .row > .col {
+    border-right: 1px solid #dee2e6;
+}
+.row > .col:last-child {
+    border-right: none;
+} */
+
+.lov-input-label-like {
+  border: none;
+  background: transparent;
+  padding: 0;
+  line-height: normal;
+  vertical-align: baseline; /* 確保與 label 的基線對齊 */
+  width: 70px;
+}
+
+/* ========================================================================
+ * 6. academy 新元件（目前僅 app/wfm1/m200/wfm1-share-info.html 使用，原樣保留、不擴充）
+ * ==================================================================== */
+
+/* academy contextual actions */
+.academy-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding-right: 4px;
+  flex: none;
+}
+.academy-hover-row .academy-row-actions {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease;
+}
+.academy-hover-row:hover .academy-row-actions,
+.academy-hover-row:focus-within .academy-row-actions {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* academy drag handle */
+.academy-drag-handle {
+  width: 22px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--academy-radius-sm);
+  background: transparent;
+  color: var(--academy-text-muted);
+  font-size: .75rem;
+  cursor: grab;
+}
+.academy-drag-handle:hover { background: var(--bs-tertiary-bg); color: var(--academy-text); }
+.academy-drag-handle:active { cursor: grabbing; }
+
+/* academy compact icon button */
+.academy-icon-btn {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--academy-radius-sm);
+  background: transparent;
+  color: var(--academy-text-secondary);
+  font-size: .75rem;
+  line-height: 1;
+}
+.academy-icon-btn:hover { background: var(--bs-tertiary-bg); color: var(--academy-text); }
+
+/* academy popover anchor */
+.academy-menu-anchor { position: relative; display: inline-flex; align-items: center; line-height: 1; }
+.academy-row-actions .dropdown { display: inline-flex; align-items: center; line-height: 1; }
+
+/* 共用拖放目標指示 */
+.academy-drop-target { box-shadow: inset 0 2px 0 var(--academy-focus); }
+
+/* 共用細滾動軸 */
+.academy-scroll-thin::-webkit-scrollbar { width: 7px; }
+.academy-scroll-thin::-webkit-scrollbar-thumb { background: var(--academy-border); border-radius: var(--academy-radius-sm); }
+.academy-scroll-thin::-webkit-scrollbar-track { background: transparent; }
+
+/* 共用 nav 未選取列（搭配 .academy-row-focus 使用） */
+.academy-row-plain { background: transparent; border: 0; }
+
+/* 共用彈出選單。它跟 .dropdown-menu 是同一類東西（浮在內容之上的暫時性選單），
+   所以圓角與陰影都要走浮層那一階：radius-lg + shadow-md。
+   先前陰影已經是 shadow-md、圓角卻停在 radius-md，兩個維度對不起來。 */
+.academy-pop-menu {
+  position: absolute; right: 0; top: calc(100% + 4px); z-index: 30; min-width: 172px;
+  padding: 6px; display: flex; flex-direction: column; gap: 1px;
+  border: 1px solid var(--academy-border); border-radius: var(--academy-radius-lg);
+  background: var(--academy-surface); box-shadow: var(--academy-shadow-md);
+}
+.academy-pop-menu-item {
+  display: flex; align-items: center; gap: .6rem; width: 100%; text-align: left; border: 0; background: transparent;
+  padding: .5rem .6rem; border-radius: var(--academy-radius-sm); color: var(--academy-text-secondary); font-size: .8125rem; line-height: 1.125rem;
+}
+.academy-pop-menu-item:hover { background: var(--bs-tertiary-bg); }
+.academy-pop-menu-item i { width: 14px; color: var(--academy-text-muted); font-size: .8rem; }
+.academy-pop-menu-danger { color: var(--academy-danger); }
+.academy-pop-menu-danger i { color: var(--academy-danger); }
+
+/* .academy-modern：僅保留字級／行高的 scoped 開關。
+   font-size 從 1rem 降到 .875rem 會讓沿用它的頁面整頁重排，這一步不隨其餘元件樣式
+   一起全域套用，只有本來就有 .academy-modern 的頁面（目前僅本模組）維持既有密度。
+   其餘現代化樣式（按鈕／表單／卡片／頁籤／下拉／清單／回饋…）已經直接下放到上面的
+   Bootstrap 元件層與 academy 既有 class，全域生效，不需要這個 class 才能拿到。 */
+.academy-modern {
+  font-size: .875rem;
+  line-height: 1.45;
+}
+
+/* 排版承擔層級 */
+.academy-page-title { margin: 0; font-size: 1.5rem; line-height: 2rem; font-weight: 600; letter-spacing: -.012em; }
+.academy-section-label { font-size: .75rem; line-height: 1rem; font-weight: 500; color: var(--academy-muted); letter-spacing: .02em; }
+.academy-muted { color: var(--academy-muted); }
+
+/* 工作區寬度上限，避免內容無限撐寬 */
+.academy-page { max-width: 1280px; margin: 0 auto; width: 100%; }
+
+/* ===== academy 元件：外殼與側欄導覽 ===== */
+.academy-app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--academy-page-bg);
+  color: var(--academy-text);
+}
+
+/* 讓出空間給 support.js 注入的 academy desktop shell 頁首（見 desktop.css） */
+html.academy-desktop-active .academy-app-shell {
+  height: calc(100vh - var(--academy-desktop-header-h, 0px));
+}
+
+.academy-sidebar {
+  width: 256px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  background: var(--academy-surface-subtle);
+  border-right: 1px solid var(--academy-border);
+}
+
+.academy-sidebar-nav {
+  flex: 1;
+  overflow: auto;
+  padding: var(--academy-space-2) var(--academy-space-3) var(--academy-space-4);
+}
+
+.academy-sidebar-footer {
+  flex: none;
+  padding: var(--academy-space-3);
+  border-top: 1px solid var(--academy-border);
+}
+
+.academy-nav-label {
+  margin: 0 8px 6px;
+  color: var(--academy-text-muted);
+  font-size: .75rem;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
+.academy-nav-list { list-style: none; margin: 0; padding: 0; }
+
+.academy-nav-row {
+  position: relative;
+  min-height: 34px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  border-radius: var(--academy-radius-sm);
+}
+.academy-nav-row:hover { background: var(--academy-surface-hover); }
+.academy-nav-active { background: var(--academy-accent-soft); }
+.academy-nav-active:hover { background: var(--academy-accent-soft); }
+.academy-nav-active > .academy-nav-button { color: var(--academy-accent-active); font-weight: 500; }
+
+.academy-nav-button {
+  min-width: 0;
+  min-height: 34px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--academy-space-2);
+  padding: 6px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--academy-text-secondary);
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  text-align: left;
+}
+.academy-nav-button:focus-visible { outline: 2px solid var(--academy-focus); outline-offset: -2px; border-radius: var(--academy-radius-sm); }
+.academy-nav-icon { width: 16px; flex: none; color: var(--academy-text-secondary); text-align: center; }
+
+.academy-nav-add-wrap { margin-top: var(--academy-space-2); }
+.academy-dashed-add-row,
+.academy-dashed-add-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--academy-space-2);
+  border: 1px dashed var(--academy-border);
+  border-radius: var(--academy-radius-md);
+  background: transparent;
+  color: var(--academy-text-secondary);
+  font-size: .875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+.academy-dashed-add-row:hover,
+.academy-dashed-add-cta:hover { background: var(--academy-surface-hover); color: var(--academy-text); }
+.academy-dashed-add-row { width: 100%; min-height: 34px; justify-content: flex-start; padding: 7px 10px; }
+.academy-dashed-add-cta { width: 100%; min-height: 40px; justify-content: center; border-color: var(--academy-border); margin-top: var(--academy-space-6); }
+
+/* ===== academy 元件：模式切換 ===== */
+.academy-mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--academy-radius-md);
+  /* mode-switch 的軌道底：唯一用到 --bs-secondary-bg 的常態背景，比 subtle 再深一階，
+     讓被選中的那一格（白色 surface）浮得出來。 */
+  background: var(--bs-secondary-bg);
+}
+.academy-mode-btn {
+  min-height: 30px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: var(--academy-radius-sm);
+  background: transparent;
+  color: var(--academy-text-secondary);
+  font-size: .8125rem;
+  line-height: 1.125rem;
+  font-weight: 500;
+}
+.academy-mode-btn:hover { color: var(--academy-text); }
+.academy-mode-btn.active { background: var(--academy-surface); color: var(--academy-text); box-shadow: var(--academy-shadow-sm); }
+
+/* ===== academy 元件：主要內容區／頁首／搜尋 ===== */
+.academy-main-pane {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
+  background: var(--academy-page-bg);
+}
+.academy-page-padded { padding: var(--academy-space-8) var(--academy-space-8) var(--academy-space-12); }
+
+.academy-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--academy-space-6);
+  margin-bottom: var(--academy-space-8);
+}
+.academy-page-heading { min-width: 0; flex: 1; }
+.academy-breadcrumb {
+  margin: 0 0 var(--academy-space-1);
+  display: flex;
+  align-items: baseline;
+  gap: .35rem;
+  flex-wrap: wrap;
+  color: var(--academy-text-muted);
+  font-size: .75rem;
+  line-height: 1rem;
+  font-weight: 400;
+}
+.academy-breadcrumb-link { border: 0; background: transparent; padding: 0; color: var(--academy-text-muted); font: inherit; }
+.academy-breadcrumb-link:hover { color: var(--academy-text-secondary); text-decoration: underline; }
+.academy-breadcrumb-sep { color: var(--academy-border); }
+.academy-page-actions { display: flex; align-items: center; gap: var(--academy-space-2); flex: none; }
+
+.academy-search-button {
+  min-width: 210px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: var(--academy-space-2);
+  padding: 7px 10px;
+  border: 1px solid var(--academy-border);
+  border-radius: var(--academy-radius-md);
+  background: var(--academy-surface);
+  color: var(--academy-text-secondary);
+  font-size: .875rem;
+  line-height: 1.25rem;
+  text-align: left;
+}
+.academy-search-button:hover { background: var(--academy-surface-subtle); }
+.academy-search-button span { flex: 1; }
+.academy-search-button kbd { padding: 1px 5px; border: 0; border-radius: var(--academy-radius-sm); background: var(--academy-surface-hover); color: var(--academy-text-muted); font: .6875rem/1rem inherit; }
+
+/* ===== academy 元件：卡片與清單列 ===== */
+.academy-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  align-items: start;
+  gap: var(--academy-space-6);
+}
+.academy-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  border: 1px solid var(--academy-border);
+  border-radius: var(--academy-radius-md);
+  background: var(--academy-surface);
+  box-shadow: var(--academy-shadow-sm);
+}
+.academy-panel:hover { border-color: var(--academy-border); }
+.academy-panel-header {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: var(--academy-space-2);
+  padding: var(--academy-space-3) var(--academy-space-4) 8px;
+}
+.academy-panel-title {
+  min-width: 0;
+  flex: 1;
+  margin: 0;
+  color: var(--academy-text);
+  font-size: .9375rem;
+  line-height: 1.375rem;
+  font-weight: 600;
+}
+.academy-panel-body { max-height: 420px; overflow: auto hidden; padding: 0 6px 8px; }
+
+.academy-entry-row {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: var(--academy-space-2);
+  padding: 7px 10px;
+  border: 0 !important;
+  border-radius: var(--academy-radius-sm);
+}
+.academy-entry-row:hover { background: var(--academy-surface-hover); }
+.academy-entry-nested { margin-left: 20px; padding-left: calc(10px - 1px); border-left: 1px solid var(--academy-border) !important; }
+.academy-entry-main { min-width: 0; flex: 1; display: flex; align-items: center; gap: var(--academy-space-2); color: var(--academy-text-secondary); font-size: .875rem; line-height: 1.25rem; font-weight: 400; }
+.academy-entry-icon { width: 16px; flex: none; text-align: center; }
+.academy-icon-muted { color: var(--academy-text-muted); }
+.academy-entry-meta { flex: none; display: flex; align-items: center; gap: 6px; }
+.academy-list-actions-cell { width: 2.25rem; }
+
+/* ===== academy 元件：徽章與空狀態 ===== */
+.academy-badge-soft { padding: 1px 6px; border-radius: 999px; background: var(--academy-surface-subtle); color: var(--academy-text-secondary); font-size: .6875rem; line-height: 1rem; font-weight: 500; }
+.academy-meta-icon-muted { color: var(--academy-text-muted); font-size: .75rem; }
+.academy-empty-row { min-height: 36px; display: flex; align-items: center; padding: 7px 10px; color: var(--academy-text-muted); font-size: .75rem; line-height: 1rem; }
+.academy-empty-panel { padding: var(--academy-space-6) var(--academy-space-4); color: var(--academy-text-muted); font-size: .8125rem; line-height: 1.125rem; text-align: center; }
+.academy-empty-state { padding: var(--academy-space-12) var(--academy-space-4); text-align: center; color: var(--academy-text-muted); border: 1px dashed var(--academy-border); border-radius: var(--academy-radius-lg); }
+.academy-empty-state p { margin: 0 0 var(--academy-space-4); }
+
+@media (max-width: 980px) {
+  .academy-sidebar { width: 232px; }
+  .academy-page-padded { padding-inline: var(--academy-space-6); }
+  .academy-search-button { min-width: 38px; width: 38px; }
+  .academy-search-button span,
+  .academy-search-button kbd { display: none; }
+}
+
+/* ========================================================================
+ * 7. 第三方修補
+ * ==================================================================== */
+
+/*關閉設定table alignment功能*/
+.ck-table-properties-form__alignment-row {
+  display: none;
+}
+
+/*避免表格預設置中*/
+.ck-content figure.table {
+  margin: inherit;
+}
+
+/*使用prism的預設顏色，避免ckeditor覆蓋*/
+.ck-content .code-toolbar pre {
+  background: #f5f2f0;
+}
+
+/*
+ * Override the width of the table set by Bootstrap content styles.
+ * See: https://github.com/ckeditor/ckeditor5-table/issues/154.
+ */
+.ck-content .table {
+  width: auto;
+}
+
+/**
+ * 專門供ckeditor儲存後，顯示內容的css，因為原本ck-editor的class不一定適用非editor狀態
+ */
+.academy-disp-ck-content pre {
+  padding: 1em;
+  border: 1px solid #c4c4c4;
+  border-radius: var(--academy-radius-sm);
+  text-align: left;
+  direction: ltr;
+  tab-size: 4;
+  white-space: pre-wrap;
+  font-style: normal;
+  min-width: 200px;
+}
+
+div.choices {
+  margin-bottom: 0.5rem;
+}
+
+/* ========================================================================
+ * 8. Media queries（與特定元件無關的雜項斷點）
+ * ==================================================================== */
+
+@media (min-width: 1650px) {
+  .container-audit {
+    max-width: 1600px;
+  }
+}
+
+
+
+
+/* ========================================================================
+ * 9. Hint 區域
+ * ==================================================================== */
+
+
+
+:root {
+  --academy-hint-font-size: .8125rem;
+  --academy-hint-line-height: 1.45;
+  --academy-hint-radius: .375rem;
+  --academy-hint-padding-y: .4rem;
+  --academy-hint-padding-x: .6rem;
+  --academy-hint-max-width: 18rem;
+  --academy-hint-offset: .5rem;
+  --academy-hint-arrow-size: .35rem;
+  --academy-hint-z-index: 1085;
+  --academy-hint-shadow: 0 .25rem .75rem rgba(0, 0, 0, .16);
+
+  --academy-hint-bg: #212529;
+  --academy-hint-color: #fff;
+}
+
+/* =========================================================
+   academy Hint
+   ========================================================= */
+
+.academy-hint {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+/* Tooltip body */
+.academy-hint::after {
+  content: attr(data-academy-hint);
+
+  position: absolute;
+  z-index: var(--academy-hint-z-index);
+
+  box-sizing: border-box;
+  width: max-content;
+  max-width: var(--academy-hint-max-width);
+  padding: var(--academy-hint-padding-y) var(--academy-hint-padding-x);
+
+  font-size: var(--academy-hint-font-size);
+  font-weight: 400;
+  line-height: var(--academy-hint-line-height);
+  text-align: left;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+
+  color: var(--academy-hint-color);
+  background: var(--academy-hint-bg);
+  border: 0;
+  border-radius: var(--academy-hint-radius);
+  box-shadow: var(--academy-hint-shadow);
+
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+
+  transition:
+    opacity .12s ease,
+    visibility .12s ease,
+    transform .12s ease;
+}
+
+/* Tooltip arrow */
+.academy-hint::before {
+  content: "";
+
+  position: absolute;
+  z-index: calc(var(--academy-hint-z-index) + 1);
+
+  width: 0;
+  height: 0;
+
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+
+  transition:
+    opacity .12s ease,
+    visibility .12s ease,
+    transform .12s ease;
+}
+
+/* Hover + keyboard */
+.academy-hint:hover::after,
+.academy-hint:hover::before,
+.academy-hint:focus-visible::after,
+.academy-hint:focus-visible::before,
+.academy-hint:focus-within::after,
+.academy-hint:focus-within::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 沒有提示文字時完全不顯示 */
+.academy-hint:not([data-academy-hint])::after,
+.academy-hint[data-academy-hint=""]::after,
+.academy-hint:not([data-academy-hint])::before,
+.academy-hint[data-academy-hint=""]::before {
+  display: none;
+}
+
+/* =========================================================
+   Color variants
+   ========================================================= */
+
+.academy-hint-primary {
+  --academy-hint-bg: #0d6efd;
+  --academy-hint-color: #fff;
+}
+
+.academy-hint-secondary {
+  --academy-hint-bg: #5c636a;
+  --academy-hint-color: #fff;
+}
+
+.academy-hint-info {
+  --academy-hint-bg: #087990;
+  --academy-hint-color: #fff;
+}
+
+.academy-hint-success {
+  --academy-hint-bg: #146c43;
+  --academy-hint-color: #fff;
+}
+
+.academy-hint-warning {
+  --academy-hint-bg: #997404;
+  --academy-hint-color: #fff;
+}
+
+.academy-hint-error {
+  --academy-hint-bg: #b02a37;
+  --academy-hint-color: #fff;
+}
+
+/* 若要沿用舊版 error attribute，可直接使用 data-academy-hint-error */
+.academy-hint-error[data-academy-hint-error]::after {
+  content: attr(data-academy-hint-error);
+}
+
+.academy-hint-error:not([data-academy-hint-error])::after {
+  content: attr(data-academy-hint);
+}
+
+/* =========================================================
+   Placement
+   ========================================================= */
+
+/* TOP - default */
+.academy-hint:not(.academy-hint-bottom):not(.academy-hint-left):not(.academy-hint-right)::after,
+.academy-hint-top::after {
+  left: 50%;
+  bottom: calc(100% + var(--academy-hint-offset));
+  transform: translate(-50%, .2rem);
+}
+
+.academy-hint:not(.academy-hint-bottom):not(.academy-hint-left):not(.academy-hint-right)::before,
+.academy-hint-top::before {
+  left: 50%;
+  bottom: calc(100% + var(--academy-hint-offset) - var(--academy-hint-arrow-size));
+  transform: translate(-50%, .2rem);
+
+  border-left: var(--academy-hint-arrow-size) solid transparent;
+  border-right: var(--academy-hint-arrow-size) solid transparent;
+  border-top: var(--academy-hint-arrow-size) solid var(--academy-hint-bg);
+}
+
+.academy-hint:not(.academy-hint-bottom):not(.academy-hint-left):not(.academy-hint-right):hover::after,
+.academy-hint:not(.academy-hint-bottom):not(.academy-hint-left):not(.academy-hint-right):hover::before,
+.academy-hint:not(.academy-hint-bottom):not(.academy-hint-left):not(.academy-hint-right):focus-visible::after,
+.academy-hint:not(.academy-hint-bottom):not(.academy-hint-left):not(.academy-hint-right):focus-visible::before,
+.academy-hint-top:hover::after,
+.academy-hint-top:hover::before,
+.academy-hint-top:focus-visible::after,
+.academy-hint-top:focus-visible::before {
+  transform: translate(-50%, 0);
+}
+
+/* BOTTOM */
+.academy-hint-bottom::after {
+  left: 50%;
+  top: calc(100% + var(--academy-hint-offset));
+  transform: translate(-50%, -.2rem);
+}
+
+.academy-hint-bottom::before {
+  left: 50%;
+  top: calc(100% + var(--academy-hint-offset) - var(--academy-hint-arrow-size));
+  transform: translate(-50%, -.2rem);
+
+  border-left: var(--academy-hint-arrow-size) solid transparent;
+  border-right: var(--academy-hint-arrow-size) solid transparent;
+  border-bottom: var(--academy-hint-arrow-size) solid var(--academy-hint-bg);
+}
+
+.academy-hint-bottom:hover::after,
+.academy-hint-bottom:hover::before,
+.academy-hint-bottom:focus-visible::after,
+.academy-hint-bottom:focus-visible::before {
+  transform: translate(-50%, 0);
+}
+
+/* LEFT */
+.academy-hint-left::after {
+  right: calc(100% + var(--academy-hint-offset));
+  top: 50%;
+  transform: translate(.2rem, -50%);
+}
+
+.academy-hint-left::before {
+  right: calc(100% + var(--academy-hint-offset) - var(--academy-hint-arrow-size));
+  top: 50%;
+  transform: translate(.2rem, -50%);
+
+  border-top: var(--academy-hint-arrow-size) solid transparent;
+  border-bottom: var(--academy-hint-arrow-size) solid transparent;
+  border-left: var(--academy-hint-arrow-size) solid var(--academy-hint-bg);
+}
+
+.academy-hint-left:hover::after,
+.academy-hint-left:hover::before,
+.academy-hint-left:focus-visible::after,
+.academy-hint-left:focus-visible::before {
+  transform: translate(0, -50%);
+}
+
+/* RIGHT */
+.academy-hint-right::after {
+  left: calc(100% + var(--academy-hint-offset));
+  top: 50%;
+  transform: translate(-.2rem, -50%);
+}
+
+.academy-hint-right::before {
+  left: calc(100% + var(--academy-hint-offset) - var(--academy-hint-arrow-size));
+  top: 50%;
+  transform: translate(-.2rem, -50%);
+
+  border-top: var(--academy-hint-arrow-size) solid transparent;
+  border-bottom: var(--academy-hint-arrow-size) solid transparent;
+  border-right: var(--academy-hint-arrow-size) solid var(--academy-hint-bg);
+}
+
+.academy-hint-right:hover::after,
+.academy-hint-right:hover::before,
+.academy-hint-right:focus-visible::after,
+.academy-hint-right:focus-visible::before {
+  transform: translate(0, -50%);
+}
+
+/* =========================================================
+   Optional utility variants
+   ========================================================= */
+
+.academy-hint-sm {
+  --academy-hint-font-size: .75rem;
+  --academy-hint-padding-y: .3rem;
+  --academy-hint-padding-x: .45rem;
+  --academy-hint-max-width: 14rem;
+}
+
+.academy-hint-lg {
+  --academy-hint-font-size: .875rem;
+  --academy-hint-padding-y: .5rem;
+  --academy-hint-padding-x: .7rem;
+  --academy-hint-max-width: 24rem;
+}
+
+.academy-hint-nowrap::after {
+  white-space: nowrap;
+  max-width: none;
+}
+
+/* 內容含真正換行字元時使用：保留 \n 換成實際行距，其餘空白仍正常收合、照樣自動換行 */
+.academy-hint-lines::after {
+  white-space: pre-line;
+}

@@ -1,0 +1,27 @@
+{
+  "application_type": "citizen",
+  "features": [
+    {
+      "id": "master-detail",
+      "route": "/master-detail",
+      "status": "implemented"
+    },
+    {
+      "id": "dashboard",
+      "route": "/dashboard",
+      "status": "implemented"
+    },
+    {
+      "id": "dashboard-drilldown",
+      "status": "implemented"
+    },
+    {
+      "id": "trading-crud",
+      "status": "implemented"
+    },
+    {
+      "id": "optimistic-concurrency",
+      "status": "implemented"
+    }
+  ]
+}
