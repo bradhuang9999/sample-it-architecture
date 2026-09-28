@@ -1,0 +1,154 @@
+{
+  "groups": [
+    {
+      "id": "getting-started",
+      "title": "開始這套教學"
+    },
+    {
+      "id": "shared-foundations",
+      "title": "共同基礎"
+    },
+    {
+      "id": "it-backend",
+      "title": "IT Backend"
+    },
+    {
+      "id": "vue",
+      "title": "Vue 路線"
+    },
+    {
+      "id": "react",
+      "title": "React 路線"
+    },
+    {
+      "id": "citizen-and-comparison",
+      "title": "Citizen 與架構比較"
+    },
+    {
+      "id": "reference",
+      "title": "參考資料"
+    }
+  ],
+  "pages": [
+    {
+      "slug": "00-overview",
+      "title": "導讀：這份教學要解決什麼問題",
+      "group": "getting-started"
+    },
+    {
+      "slug": "01-teaching-site-design",
+      "title": "教學網站設計",
+      "group": "getting-started"
+    },
+    {
+      "slug": "02-three-architectures",
+      "title": "三種架構總覽",
+      "group": "getting-started"
+    },
+    {
+      "slug": "03-shared-web-foundations",
+      "title": "共同 Web 基礎",
+      "group": "shared-foundations"
+    },
+    {
+      "slug": "04-it-backend",
+      "title": "IT 共用 Backend：Java 與 Spring Boot",
+      "group": "it-backend"
+    },
+    {
+      "slug": "05-vue-path",
+      "title": "IT Vue 路線",
+      "group": "vue"
+    },
+    {
+      "slug": "06-react-path",
+      "title": "IT React 路線",
+      "group": "react"
+    },
+    {
+      "slug": "07-citizen-python-path",
+      "title": "Citizen Python 路線",
+      "group": "citizen-and-comparison"
+    },
+    {
+      "slug": "08-scripts-and-build",
+      "title": "Scripts 與 Build Tooling",
+      "group": "shared-foundations"
+    },
+    {
+      "slug": "09-configuration",
+      "title": "設定檔語法",
+      "group": "shared-foundations"
+    },
+    {
+      "slug": "10-feature-comparison",
+      "title": "同一功能的三種寫法比較",
+      "group": "citizen-and-comparison"
+    },
+    {
+      "slug": "11-syntax-index",
+      "title": "Syntax Index",
+      "group": "reference"
+    },
+    {
+      "slug": "12-learning-paths",
+      "title": "建議學習路徑",
+      "group": "getting-started"
+    },
+    {
+      "slug": "13-site-operations",
+      "title": "教學網站運作與維護",
+      "group": "reference"
+    },
+    {
+      "slug": "14-guided-labs",
+      "title": "每個範例的實作 Lab",
+      "group": "reference"
+    },
+    {
+      "slug": "15-human-review",
+      "title": "Human Review Checklist",
+      "group": "shared-foundations"
+    },
+    {
+      "slug": "16-readiness-check",
+      "title": "驗證與閱讀檢查",
+      "group": "shared-foundations"
+    },
+    {
+      "slug": "17-responsibility-boundaries",
+      "title": "三個專案的技術責任邊界",
+      "group": "citizen-and-comparison"
+    },
+    {
+      "slug": "18-learning-outcomes",
+      "title": "最後應該教會什麼",
+      "group": "citizen-and-comparison"
+    },
+    {
+      "slug": "appendix-a-version-baseline",
+      "title": "版本基線",
+      "group": "reference"
+    },
+    {
+      "slug": "appendix-b-web-typescript-api",
+      "title": "Web 與 TypeScript API 補充",
+      "group": "reference"
+    },
+    {
+      "slug": "appendix-c-css-reference",
+      "title": "CSS 語法補充",
+      "group": "reference"
+    },
+    {
+      "slug": "appendix-d-file-mapping",
+      "title": "專案檔案與教學章節對照",
+      "group": "reference"
+    },
+    {
+      "slug": "appendix-e-out-of-scope",
+      "title": "目前未使用的技術",
+      "group": "reference"
+    }
+  ]
+}
